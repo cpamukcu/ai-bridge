@@ -528,13 +528,15 @@ img[data-a]:not([src]){visibility:hidden}
 .acad .photo img{transform:scale(1.35) translateY(15%)}
 .acad .medals{position:absolute!important;left:0;right:0;top:var(--medal-y,420px);display:grid;grid-template-columns:repeat(3,390px);column-gap:21px;justify-content:center;justify-items:center}
 .acad .medals .badge{width:170px;height:170px;grid-row:auto;filter:drop-shadow(0 0 30px rgba(90,200,250,.35)) drop-shadow(0 18px 24px rgba(0,0,0,.6))}
-.acad .badge b{position:absolute;left:49%;top:47%;transform:translate(-50%,-50%);font-size:62px;font-weight:600;line-height:1}
+.acad .badge b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:62px;font-weight:600;line-height:1}
 .acad .badges{left:0;right:0;grid-template-columns:repeat(3,390px);column-gap:21px;justify-content:center}
 .acad .bcol{display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 30px 34px}
 .acad .bcol h3{margin-top:0;font-size:46px}
 .acad .bcol p{margin-top:8px}
 .acad .bcol .cr{margin-top:auto;padding-top:0}
 .acad .bcol p{margin-bottom:20px}
+.acad .bcol .cr{background:none!important;border-radius:0;box-shadow:none;backdrop-filter:none;width:100%;align-self:stretch;justify-self:stretch;text-align:center;margin-top:auto;padding:16px 0 0;border-top:1px solid rgba(255,255,255,.18);font-size:22px;font-weight:600;white-space:nowrap;color:#5AC8FA}
+.acad .bcol.key .cr{color:#FF9F0A;border-top-color:rgba(255,159,10,.45)}
 /* 8: app header + tab bar, all badges in color */
 .scr .li{padding:11px 0}
 .scr h4{margin-top:18px}
@@ -682,7 +684,6 @@ img[data-a]:not([src]){visibility:hidden}
 
 <!-- 6 QWEN ACADEMY -->
 <section class="slide acad" data-notes="<b>Say:</b> The offer is Qwen Academy. Like a game: learn, earn a badge, get credits. Starter: finish one short course. Builder: build a project with your group. Bridge: help friends from other groups earn their badge. The higher the badge, the more free credits. (40 s)<br><b>If asked:</b> Credit amounts are not set. I want to agree them with Alibaba. The name is my proposal.">
-  <div class="photo"><img data-a="h5-academy" alt=""></div>
   <div>
     <div class="label r lg"><img src="assets/logos/qwen-mark.png" alt="">The offer</div>
     <h2 class="r">Qwen Academy.<br><span class="sub">Learn. Earn a badge. Get credits.</span></h2>
