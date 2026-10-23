@@ -266,23 +266,23 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,"H
 #tv{background:#000;border-radius:28px}
 .hint{color:rgba(255,255,255,.35)}
 #notes{background:rgba(20,20,22,.96)}
-#bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;
-  background:rgba(28,28,30,.82);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font:500 17px/1 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  color:#f5f5f7;transition:opacity .5s;user-select:none}
+#bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:2px;padding:5px 10px;border-radius:999px;
+  background:rgba(28,28,30,.82);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font:500 14px/1 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  color:#f5f5f7;transition:opacity .4s;user-select:none}
 #bar.idle{opacity:0;pointer-events:none}
-#bar button{all:unset;cursor:pointer;padding:12px 16px;border-radius:999px;white-space:nowrap}
+#bar button{all:unset;cursor:pointer;padding:8px 12px;border-radius:999px;white-space:nowrap}
 #bar button:hover{background:rgba(255,255,255,.12)}
 #bar button.on{color:#30D158}
-#bar #count{min-width:74px;text-align:center;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
-#bar .sep{width:1px;height:22px;background:rgba(255,255,255,.14);margin:0 4px}
+#bar #count{min-width:58px;text-align:center;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
+#bar .sep{width:1px;height:16px;background:rgba(255,255,255,.14);margin:0 4px}
 .pv #bar{display:none}
 #notes{bottom:84px;left:50%;right:auto;width:min(1500px,calc(100% - 48px));transform:translateX(-50%);max-height:58vh;border-radius:26px;padding:26px 34px;font-size:clamp(20px,2.3vw,34px);line-height:1.45;z-index:8;border:1px solid rgba(255,255,255,.14)}
 #phoneOv{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
 #phoneOv[hidden]{display:none}
-#phoneOv .pcard{position:relative;width:min(440px,calc(100% - 32px));padding:30px;border-radius:28px;text-align:center;background:rgba(28,28,30,.94);border:1px solid rgba(255,255,255,.16)}
-#phoneOv .pk{font:700 12px/1 inherit;letter-spacing:.14em;text-transform:uppercase;color:#0a84ff}
-#phoneOv h2{margin:10px 0 18px;font:700 24px/1.2 inherit}
-#phoneOv .pqr{width:232px;height:232px;margin:0 auto;padding:10px;border-radius:18px;background:#fff}
+#phoneOv .pcard{position:relative;width:min(380px,calc(100% - 32px));padding:28px 26px;border-radius:28px;text-align:center;background:rgba(28,28,30,.94);border:1px solid rgba(255,255,255,.16)}
+#phoneOv .pk{font-size:12px;font-weight:700;line-height:1;letter-spacing:.14em;text-transform:uppercase;color:#0a84ff}
+#phoneOv h2{margin:12px 0 18px;font-size:22px;font-weight:700;line-height:1.25;letter-spacing:0}
+#phoneOv .pqr{width:200px;height:200px;margin:0 auto;padding:10px;border-radius:18px;background:#fff}
 #phoneOv .pqr svg{width:100%;height:100%;display:block}
 #phoneOv .purl{margin:16px 0 0;font-size:13px;color:#8e8e93;word-break:break-all;user-select:all}
 #phoneOv .pstat{margin:14px 0 0;font-size:14px;color:#8e8e93}
@@ -1114,8 +1114,8 @@ if(PREVIEW){
 // ---- bottom bar: back / next, Notes, Full screen, Phone (QR). Fades out after 3 s without the mouse; click on it never advances the slide ----
 const bar=document.getElementById('bar'),ov=document.getElementById('phoneOv'),$b=id=>document.getElementById(id);
 if(PREVIEW)document.documentElement.classList.add('pv');
-let idleT;const wake=()=>{bar.classList.remove('idle');clearTimeout(idleT);idleT=setTimeout(()=>{if(ov.hidden)bar.classList.add('idle')},3000)};
-['mousemove','keydown','touchstart'].forEach(ev=>addEventListener(ev,wake,{passive:true}));wake();
+let idleT;const wake=()=>{bar.classList.remove('idle');clearTimeout(idleT);idleT=setTimeout(()=>{if(ov.hidden)bar.classList.add('idle')},2000)};
+['mousemove','touchstart'].forEach(ev=>addEventListener(ev,wake,{passive:true}));wake();
 bar.addEventListener('click',e=>e.stopPropagation());ov.addEventListener('click',e=>{e.stopPropagation();if(e.target===ov)ov.hidden=true});
 const toggleNotes=()=>{notes.classList.toggle('show');$b('bNotes').classList.toggle('on',notes.classList.contains('show'))};
 const toggleFull=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
