@@ -884,7 +884,7 @@ img[data-a]:not([src]){visibility:hidden}
 <div id="tv"><video muted playsinline preload="auto"></video></div><div id="notes"></div>
 <div id="bar"><button id="bPrev" aria-label="Back">&#8592;</button><span id="count"></span><button id="bNext" aria-label="Next">&#8594;</button><span class="sep"></span><button id="bNotes">Notes</button><button id="bFull">Full screen</button><button id="bPhone">Phone</button></div>
 <div id="phoneOv" hidden><div class="pcard"><button class="px" aria-label="Close">&#215;</button><p class="pk">Phone remote</p><h2>Scan to control the slides and read your notes</h2><div class="pqr"></div><p class="purl"></p><p class="pstat"></p></div></div>
-<script src="vendor/qrcode.js"></script>
+<script src="vendor/qrcode.js"></script><script src="vendor/mqtt.min.js"></script>
 <script src="assets/net.js"></script>
 <script src="assets/fx.js?v=4"></script>
 <script>
@@ -1027,12 +1027,12 @@ const PREVIEW=location.search.includes('preview');
 let LIVE=false; // turns on only when the presenting server (Start Presenting.command) answers; on the public site there is no phone remote
 const slideTitle=sl=>{const h=sl&&sl.querySelector('h1,h2');return h?h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Video'};
 function syncState(){
-  if(!LIVE)return;
+  if(!LIVE){if(window.mqttPublish)mqttPublish();return}
   fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length-1,notes:slides[i].dataset.notes||'',
     title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
 }
-document.getElementById('bPhone').style.display='none';
-if(!PREVIEW&&location.protocol.startsWith('http'))fetch('/api/info',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(info=>{if(!info||!info.ips)return;LIVE=true;document.getElementById('bPhone').style.display='';startLive()}).catch(()=>{});
+if(PREVIEW||!location.protocol.startsWith('http'))document.getElementById('bPhone').style.display='none';
+if(!PREVIEW&&location.protocol.startsWith('http'))fetch('/api/info',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(info=>{if(!info||!info.ips)return;LIVE=true;startLive()}).catch(()=>{});
 function startLive(){
   let since=null;setInterval(syncState,2000);syncState();
   (async function poll(){
@@ -1054,15 +1054,39 @@ let idleT;const wake=()=>{bar.classList.remove('idle');clearTimeout(idleT);idleT
 bar.addEventListener('click',e=>e.stopPropagation());ov.addEventListener('click',e=>{e.stopPropagation();if(e.target===ov)ov.hidden=true});
 const toggleNotes=()=>{notes.classList.toggle('show');$b('bNotes').classList.toggle('on',notes.classList.contains('show'))};
 const toggleFull=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+// ---- phone remote over the internet when the local server is not running ----
+// Only the slide number and the next/back commands travel through public MQTT relays (like the Honyar deck).
+// Notes never leave the page: the phone reads them from the deck page itself.
+let mq=null,mqRoom=null,mqSeen={};
+function mqttStart(){
+  if(mq||!window.mqtt)return;
+  const ALPH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  try{mqRoom=localStorage.getItem('abRoom')}catch(e){}
+  if(!mqRoom||!/^[A-Z0-9]{6}$/.test(mqRoom)){const b=new Uint8Array(6);crypto.getRandomValues(b);mqRoom=[...b].map(x=>ALPH[x%ALPH.length]).join('');try{localStorage.setItem('abRoom',mqRoom)}catch(e){}}
+  const BASE='ai-bridge-deck/v1/'+mqRoom+'/';mq=[];
+  ['wss://broker-cn.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://broker.emqx.io:8084/mqtt'].forEach(u=>{
+    try{const c=mqtt.connect(u,{clientId:'abdeck_'+mqRoom+'_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
+      c.on('connect',()=>{c.subscribe(BASE+'cmd');mqttPublish()});c.on('error',()=>{});
+      c.on('message',(t,p)=>{try{const m=JSON.parse(p.toString());if(!m||!m.id||mqSeen[m.id])return;mqSeen[m.id]=1;
+        if(m.a==='next')next();else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
+      mq.push(c)}catch(e){}});
+  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length-1,t:Date.now()});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
+  setInterval(()=>window.mqttPublish(),10000);
+}
 async function togglePhone(){
-  if(!LIVE)return;
   ov.hidden=!ov.hidden;if(ov.hidden)return;
-  let url=location.origin+'/remote',msg='';
-  try{const r=await (await fetch('/api/info',{cache:'no-store'})).json();
-    if(r.ips&&r.ips.length&&/^(localhost|127\.)/.test(location.hostname))url='http://'+r.ips[0]+':'+location.port+'/remote';
-    if(!r.ips||!r.ips.length)msg='No network yet: join your phone hotspot, then reload.'}catch(e){msg='Open the deck through Start Presenting.command to use the phone remote.'}
+  let url,msg;
+  if(LIVE){
+    url=location.origin+'/remote';msg='Phone and laptop on the same Wi-Fi or hotspot. No internet needed.';
+    try{const r=await (await fetch('/api/info',{cache:'no-store'})).json();
+      if(/^(localhost|127\.)/.test(location.hostname)&&r.ips&&r.ips.length)url='http://'+r.ips[0]+':'+location.port+'/remote';
+      else if(!r.ips||!r.ips.length)msg='No network yet: join your phone hotspot, then reload.'}catch(e){}
+  }else{
+    mqttStart();window.mqttPublish&&window.mqttPublish();
+    url=new URL('remote.html',location.href).href.split('#')[0]+'#'+mqRoom;msg='Laptop and phone both need internet. Code '+mqRoom;
+  }
   try{const qr=qrcode(0,'M');qr.addData(url);qr.make();ov.querySelector('.pqr').innerHTML=qr.createSvgTag(6,2)}catch(e){}
-  ov.querySelector('.purl').textContent=url;ov.querySelector('.pstat').textContent=msg||'Phone and laptop on the same Wi-Fi or hotspot. No internet needed.';
+  ov.querySelector('.purl').textContent=url;ov.querySelector('.pstat').textContent=msg;
 }
 $b('bPrev').onclick=()=>prev();$b('bNext').onclick=()=>next();$b('bNotes').onclick=toggleNotes;$b('bFull').onclick=toggleFull;$b('bPhone').onclick=togglePhone;
 ov.querySelector('.px').onclick=()=>ov.hidden=true;

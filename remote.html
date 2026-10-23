@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>AI Bridge Remote</title>
+<style>
+:root{--bg:#111113;--card:#1d1d1f;--ink:#f5f5f7;--gray:#8e8e93;--coral:#E8604C;--teal:#3FA98A;--yellow:#F2B33D}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;overscroll-behavior:none}
+body{display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:var(--gray)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff453a;margin-right:6px}
+.dot.on{background:#30d158}
+#timer{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+#timer.warn{color:var(--yellow)}#timer.over{color:#ff453a}
+.slide{margin-top:14px;font-size:15px;color:var(--gray)}
+.slide b{color:var(--ink);font-size:22px}
+#notes{flex:1;overflow:auto;margin-top:12px;background:var(--card);border-radius:20px;padding:18px;font-size:20px;line-height:1.45}
+#notes b{color:var(--yellow)}
+#next{margin-top:10px;font-size:14px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btns{display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-top:14px}
+button{border:none;border-radius:22px;font-size:22px;font-weight:700;padding:30px 0;color:#fff;font-family:inherit}
+#prev{background:#2c2c2e}#nxt{background:linear-gradient(90deg,var(--coral),var(--yellow))}
+button:active{transform:scale(.97);opacity:.85}
+.row{display:flex;gap:10px;margin-top:10px}
+.row button{flex:1;padding:12px 0;font-size:15px;background:#2c2c2e;border-radius:14px}
+</style>
+</head>
+<body>
+  <div class="top"><span><span class="dot" id="dot"></span><span id="conn">connecting…</span></span><span id="timer">00:00</span></div>
+  <div class="slide">Slide <b id="num">–</b> / <span id="tot">–</span></div>
+  <div id="notes">Waiting for the deck… Open the deck on the laptop first.</div>
+  <div id="next"></div>
+  <div class="btns"><button id="prev">‹ Back</button><button id="nxt">Next ›</button></div>
+  <div class="row"><button id="tstart">Start timer</button><button id="treset">Reset</button><button id="first">First slide</button></div>
+<script src="vendor/mqtt.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const ROOM=(location.hash.slice(1)||'').toUpperCase(),NET=/^[A-Z0-9]{6}$/.test(ROOM);
+let mqC=[],DECKS=null;
+const send=(cmd,n)=>{
+  if(NET){const m=JSON.stringify({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:cmd==='goto'?'go':cmd,n});mqC.forEach(c=>c.connected&&c.publish('ai-bridge-deck/v1/'+ROOM+'/cmd',m))}
+  else fetch('/api/cmd',{method:'POST',body:JSON.stringify({cmd,n})}).catch(()=>{});
+  if(navigator.vibrate)navigator.vibrate(15)};
+$('nxt').onclick=()=>send('next');$('prev').onclick=()=>send('prev');$('first').onclick=()=>send('goto',0);
+// swipe left/right on the notes also works
+let sx=null;document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)send(dx<0?'next':'prev');sx=null});
+// timer: 10 minutes talk, yellow at 9, red after 10
+let t0=null,acc=0;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
+$('tstart').onclick=()=>{if(t0){acc+=(Date.now()-t0)/1000;t0=null;$('tstart').textContent='Start timer'}else{t0=Date.now();$('tstart').textContent='Pause'}};
+$('treset').onclick=()=>{t0=t0?Date.now():null;acc=0};
+setInterval(()=>{const s=acc+(t0?(Date.now()-t0)/1000:0);const el=$('timer');el.textContent=fmt(s);el.className=s>600?'over':s>540?'warn':''},250);
+let last='',lastT=0;
+const clean=h=>h.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+function show(st,fresh){
+  $('dot').className='dot on';$('conn').textContent=fresh?'deck connected':'deck not open';
+  const sl=DECKS&&DECKS[st.slide],nx=DECKS&&DECKS[st.slide+1];
+  const notes=st.notes!==undefined?st.notes:(sl?sl.notes:''),next=st.next!==undefined?st.next:(nx?nx.title:'');
+  const key=st.slide+'|'+notes;
+  if(key!==last){last=key;$('num').textContent=st.slide+1;$('tot').textContent=st.total;$('notes').innerHTML=notes||'(no notes)';$('next').textContent=next?'Next: '+next:'';$('notes').scrollTop=0}
+}
+async function poll(){
+  try{const st=await (await fetch('/api/state',{cache:'no-store'})).json();show(st,Date.now()-st.t<4000)}
+  catch(e){$('dot').className='dot';$('conn').textContent='no connection'}
+  setTimeout(poll,500);
+}
+if(NET){
+  // notes and titles come from the deck page itself (same site), so only slide numbers cross the relay
+  fetch('index.html').then(r=>r.text()).then(t=>{const d=new DOMParser().parseFromString(t,'text/html');
+    DECKS=[...d.querySelectorAll('.slide')].map(x=>{const h=x.querySelector('h1,h2');return{notes:x.dataset.notes||'',title:h?clean(h.innerHTML):'Video'}});
+    if(window.lastState)show(window.lastState,true)}).catch(()=>{});
+  const BASE='ai-bridge-deck/v1/'+ROOM+'/';$('conn').textContent='connecting…';
+  ['wss://broker-cn.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://broker.emqx.io:8084/mqtt'].forEach(u=>{
+    try{const c=mqtt.connect(u,{clientId:'abphone_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
+      c.on('connect',()=>{c.subscribe(BASE+'state');c.publish(BASE+'cmd',JSON.stringify({id:'hi'+Date.now().toString(36),a:'sync'}));$('dot').className='dot on'});
+      c.on('error',()=>{});
+      c.on('message',(t,p)=>{try{const st=JSON.parse(p.toString());lastT=Date.now();window.lastState=st;show(st,true)}catch(e){}});
+      mqC.push(c)}catch(e){}});
+  setInterval(()=>{if(lastT&&Date.now()-lastT>25000)$('conn').textContent='deck not open'},3000);
+}else poll();
+</script>
+</body>
+</html>
