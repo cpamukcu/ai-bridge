@@ -528,7 +528,7 @@ img[data-a]:not([src]){visibility:hidden}
 .acad .photo img{transform:scale(1.35) translateY(15%)}
 .acad .medals{position:absolute!important;left:0;right:0;top:var(--medal-y,420px);display:grid;grid-template-columns:repeat(3,390px);column-gap:21px;justify-content:center;justify-items:center}
 .acad .medals .badge{width:170px;height:170px;grid-row:auto;filter:drop-shadow(0 0 30px rgba(90,200,250,.35)) drop-shadow(0 18px 24px rgba(0,0,0,.6))}
-.acad .badge b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:62px;font-weight:600;line-height:1}
+.acad .badge b{position:absolute;left:47.7%;top:45%;transform:translate(-50%,-50%);font-size:62px;font-weight:600;line-height:1}
 .acad .badges{left:0;right:0;grid-template-columns:repeat(3,390px);column-gap:21px;justify-content:center}
 .acad .bcol{display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 30px 34px}
 .acad .bcol h3{margin-top:0;font-size:46px}
@@ -536,6 +536,8 @@ img[data-a]:not([src]){visibility:hidden}
 .acad .bcol .cr{margin-top:auto;padding-top:0}
 .acad .bcol p{margin-bottom:20px}
 .acad .bcol .cr{background:none!important;border-radius:0;box-shadow:none;backdrop-filter:none;width:100%;align-self:stretch;justify-self:stretch;text-align:center;margin-top:auto;padding:16px 0 0;border-top:1px solid rgba(255,255,255,.18);font-size:22px;font-weight:600;white-space:nowrap;color:#5AC8FA}
+.acad .bcol .cr{display:flex;align-items:center;justify-content:center;gap:12px}
+.acad .bcol .cr img{width:84px;height:84px;margin:-22px 0;mix-blend-mode:screen;flex:none}
 .acad .bcol.key .cr{color:#FF9F0A;border-top-color:rgba(255,159,10,.45)}
 /* 8: app header + tab bar, all badges in color */
 .scr .li{padding:11px 0}
@@ -692,9 +694,9 @@ img[data-a]:not([src]){visibility:hidden}
     <div class="badge bz" id="bz"><b>1</b></div><div class="badge sv" id="sv"><b>2</b></div><div class="badge gd" id="gd"><b>3</b></div>
   </div>
   <div class="badges">
-    <div class="bcol glass r"><h3>Starter</h3><p>Finish one short course</p><span class="cr">+ credits</span></div>
-    <div class="bcol glass r"><h3>Builder</h3><p>Build a project with your group</p><span class="cr">++ more credits</span></div>
-    <div class="bcol glass key r"><h3>Bridge</h3><p>Help friends from other groups earn a badge</p><span class="cr">+++ most credits + certificate</span></div>
+    <div class="bcol glass r"><h3>Starter</h3><p>Finish one short course</p><span class="cr"><img src="assets/new/icon-credit-1.webp" alt="">+ credits</span></div>
+    <div class="bcol glass r"><h3>Builder</h3><p>Build a project with your group</p><span class="cr"><img src="assets/new/icon-credit-2.webp" alt="">++ more credits</span></div>
+    <div class="bcol glass key r"><h3>Bridge</h3><p>Help friends from other groups earn a badge</p><span class="cr"><img src="assets/new/icon-credit-3.webp" alt="">+++ most credits + certificate</span></div>
   </div>
 </section>
 
