@@ -221,7 +221,7 @@ table.tb{border-collapse:collapse;width:100%;margin-top:36px;font-size:28px}
   font-size:20px;line-height:1.5;padding:20px 32px;display:none;z-index:9}
 #notes.show{display:block}
 #notes b{color:#F2B33D}
-#count{position:fixed;right:18px;bottom:12px;font-size:14px;color:#c7c7cc;z-index:8}
+
 
 /* ===== THEME: Apple keynote, dark, liquid glass (see DESIGN.md) ===== */
 :root{
@@ -265,7 +265,27 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,"H
 #tv{background:#000;border-radius:28px}
 .hint{color:rgba(255,255,255,.35)}
 #notes{background:rgba(20,20,22,.96)}
-#count{font-size:15px;color:rgba(255,255,255,.45);letter-spacing:.06em}
+#bar{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;
+  background:rgba(28,28,30,.82);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font:500 17px/1 -apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
+  color:#f5f5f7;transition:opacity .5s;user-select:none}
+#bar.idle{opacity:0;pointer-events:none}
+#bar button{all:unset;cursor:pointer;padding:12px 16px;border-radius:999px;white-space:nowrap}
+#bar button:hover{background:rgba(255,255,255,.12)}
+#bar button.on{color:#30D158}
+#bar #count{min-width:74px;text-align:center;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums}
+#bar .sep{width:1px;height:22px;background:rgba(255,255,255,.14);margin:0 4px}
+.pv #bar{display:none}
+#notes{bottom:84px;left:50%;right:auto;width:min(1500px,calc(100% - 48px));transform:translateX(-50%);max-height:58vh;border-radius:26px;padding:26px 34px;font-size:clamp(20px,2.3vw,34px);line-height:1.45;z-index:8;border:1px solid rgba(255,255,255,.14)}
+#phoneOv{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#f5f5f7;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}
+#phoneOv[hidden]{display:none}
+#phoneOv .pcard{position:relative;width:min(440px,calc(100% - 32px));padding:30px;border-radius:28px;text-align:center;background:rgba(28,28,30,.94);border:1px solid rgba(255,255,255,.16)}
+#phoneOv .pk{font:700 12px/1 inherit;letter-spacing:.14em;text-transform:uppercase;color:#0a84ff}
+#phoneOv h2{margin:10px 0 18px;font:700 24px/1.2 inherit}
+#phoneOv .pqr{width:232px;height:232px;margin:0 auto;padding:10px;border-radius:18px;background:#fff}
+#phoneOv .pqr svg{width:100%;height:100%;display:block}
+#phoneOv .purl{margin:16px 0 0;font-size:13px;color:#8e8e93;word-break:break-all;user-select:all}
+#phoneOv .pstat{margin:14px 0 0;font-size:14px;color:#8e8e93}
+#phoneOv .px{all:unset;cursor:pointer;position:absolute;top:12px;right:16px;font-size:26px;color:#8e8e93}
 h1,h2{font-weight:650}
 h1{letter-spacing:-.035em}
 
@@ -566,7 +586,7 @@ img[data-a]:not([src]){visibility:hidden}
 <div id="stage">
 
 <!-- 1 TITLE -->
-<section class="slide" id="s-title" data-scene="title">
+<section class="slide" id="s-title" data-scene="title" data-notes="<b>Start here.</b> The picture shows the gap: a student on one island, AI on the other. <b>Say:</b> Hello, I'm Can Pamukcu. This is AI Bridge: a campaign with Alibaba's Qwen to help international students in China use AI well. (pause) Today I want to build a bridge. <b>Click:</b> the bridge builds, then we land on the problem. (15 s + 13 s video)">
   <div class="photo"><img data-a="h1-title" alt=""></div>
   <div>
     <h1 class="r ttl" aria-label="AI Bridge"><span class="w">AI</span> <span class="w grad">Bridge</span></h1>
@@ -583,7 +603,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 2 PROBLEM -->
-<section class="slide" id="s-problem">
+<section class="slide" id="s-problem" data-notes="<b>Say:</b> In a survey of 3,839 students in 16 countries, 86% already use AI, and more than half every week. (pause) But 58% say they don't have enough AI knowledge and skills, and almost half don't feel ready for an AI workplace. So students use AI, but many don't use it well. That's my problem. (35 s)<br><b>If asked:</b> Digital Education Council, Global AI Student Survey 2024. These are global numbers, not only China.">
   <div class="label r">The problem</div>
   <h2 class="r">Students use AI. <span class="grad">But not well.</span></h2>
   <div class="bento">
@@ -597,7 +617,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 3 THREE REASONS -->
-<section class="slide">
+<section class="slide" data-notes="<b>Say:</b> Why? I see three reasons. One: no skill: nobody shows them how. Fix: short courses. Two: no easy start: AI tools cost money or feel hard. Fix: free credits. Three: small circles: international students stay in their own country group. Fix: start with bridge students, the ones with friends in other groups. (45 s)<br><b>If asked:</b> International classes split into cultural groups (Rienties et al., 2013). Ease of use drives AI use (Cao et al., 2025).">
   <div class="photo dim shade-v"><img data-a="s1-network" alt=""></div>
   <div class="label r">Why?</div>
   <h2 class="r" style="font-size:96px">Three reasons.</h2>
@@ -609,7 +629,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 3b PROOF -->
-<section class="slide">
+<section class="slide" data-notes="<b>Say:</b> This is not a crazy idea. The biggest AI companies already fight for students. Google gives students its AI for free for a year. OpenAI put ChatGPT Edu into Indiana University for 120,000 students. Anthropic made Claude for Education with a Learning Mode. GitHub has given free tools to more than 1.5 million students. Why? Students who learn a tool today use it at work tomorrow. (pause) And Qwen? Qwen gives free tokens to developers, but I couldn't find a student academy. That's the gap. (45 s)<br><b>If asked:</b> Google: AI Pro free 1 year for US students, AI Plus in 140+ countries (Aug 2026). Qwen: 1M free tokens per model for 90 days, for new Model Studio users (Singapore region).">
   <div class="label r">Proof it works</div>
   <h2 class="r" style="font-size:96px">Every AI company <span class="grad live">wants students.</span></h2>
   <div class="proof">
@@ -623,7 +643,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 4 IDEA -->
-<section class="slide" id="s-idea">
+<section class="slide" id="s-idea" data-notes="<b>Say:</b> My idea is a partnership. Qwen gives the tool and free credits. AI Bridge brings the students: courses, a community, and a smart way to choose who starts first. This is a proposal. Nothing is agreed with Alibaba yet. (30 s)">
   <div class="photo idea-photo"><img data-a="h3-idea" alt=""></div>
   <div class="idea-c">
     <div class="label r lg"><img src="assets/logos/qwen-mark.png" alt="">Qwen <span class="x">×</span> <img class="ab-mini" src="assets/new/ai-bridge-logo.png" alt="">AI Bridge</div>
@@ -646,7 +666,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 5 WHO -->
-<section class="slide who-s">
+<section class="slide who-s" data-notes="<b>Say:</b> My audience is international students in China. There were about 380,000 in 2024–25. They are far from home, they live in small groups, and many of them can't easily use ChatGPT here. Globally, 66% of students use ChatGPT most, but that is hard to reach in China. So a Chinese AI like Qwen is useful for them. I start with one pilot group at my university. (35 s)<br><b>If asked:</b> 66% ChatGPT: DEC Global AI Student Survey 2024. Country groups: Rienties et al., 2013.<br><b>If asked:</b> Ministry of Education, via China Daily.">
   <div class="photo shade-l"><img data-a="h4-who" alt=""></div>
   <div class="label r">Who</div>
   <div class="big r" data-count>380,000</div>
@@ -660,7 +680,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 6 QWEN ACADEMY -->
-<section class="slide acad">
+<section class="slide acad" data-notes="<b>Say:</b> The offer is Qwen Academy. Like a game: learn, earn a badge, get credits. Starter: finish one short course. Builder: build a project with your group. Bridge: help friends from other groups earn their badge. The higher the badge, the more free credits. (40 s)<br><b>If asked:</b> Credit amounts are not set. I want to agree them with Alibaba. The name is my proposal.">
   <div class="photo"><img data-a="h5-academy" alt=""></div>
   <div>
     <div class="label r lg"><img src="assets/logos/qwen-mark.png" alt="">The offer</div>
@@ -677,7 +697,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 6b ACADEMY DETAIL -->
-<section class="slide">
+<section class="slide" data-notes="<b>Say:</b> This is how it looks for a student. Here is Mei. She finished courses, she has two badges, and she helped three friends from other groups, so the Bridge badge is next. There are four starter courses, one for each kind of student: business, design, research and thesis. Each is about 10 minutes, with one real task. Finish one, and you get the Starter badge. (45 s)<br><b>If asked:</b> The phone is a concept mockup; numbers on it are examples, not real data. The research course also teaches how to catch AI mistakes.">
   <div style="display:grid;grid-template-columns:460px 1fr;gap:120px;align-items:center;height:100%">
     <div class="zoom">
       <div class="phone glass"><div class="scr">
@@ -709,7 +729,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 7 WIN-WIN -->
-<section class="slide">
+<section class="slide" data-notes="<b>Say:</b> Why would anyone help a friend? Because both win. The new student gets bonus credits and a friend to ask. The helper gets credits when the friend earns a badge, plus the Bridge badge and a certificate for the CV. Qwen gets new users who will be future engineers. One rule: help a friend earn a badge, and you both get credits. (45 s)<br><b>If asked:</b> The helper is paid only when the friend finishes a course, not just signs up. That stops spam invites. Same idea as Dropbox: invite a friend, both get space.">
   <div class="label r">Why help each other?</div>
   <h2 class="r" style="font-size:96px">Everyone <span class="grad">wins.</span></h2>
   <div class="glass wwp r"><div class="ww">
@@ -722,7 +742,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 8 DATA -->
-<section class="slide" data-scene="data">
+<section class="slide" data-scene="data" data-notes="<b>Say (click 1):</b> Does starting with bridges really help? There's no public friendship network of international students, so I used a real one as a stand-in: 468 students at Caltech, in 8 houses. Each colour is a house. Friends stay in their own house: only half of friendships cross houses. If people mixed freely it would be 87%.<br><b>Say (click 2):</b> Then I played a game on the computer. The AI skill starts with 5 students in one house. Each one may pass it to each friend. I ran it 300 times for every house. Random starters reach about 4 of the 7 other houses. Bridge starters, the ones circled, reach 6. In class terms, bridges are students with high betweenness centrality: they sit across structural holes. So: start with bridges. (60–75 s)<br><b>Note:</b> the moving spread on click 2 is an illustration of the idea; the numbers on the bars come from 300 real runs per house.<br><b>If asked:</b> See study guide part 4: 2% chance per friend, 72 vs 49 people in other houses. Here the most popular students were also the bridges.">
   <div class="data">
     <div class="net zoom"><img src="assets/network.svg" alt="Caltech student friendship network" style="width:100%"></div>
     <div>
@@ -748,7 +768,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 9 LADDER -->
-<section class="slide">
+<section class="slide" data-notes="<b>Say:</b> This is the ladder of engagement, using the model from class: awareness, engagement, conversion, retention, advocacy. Each step has one metric. See: a 1-minute Qwen lesson on Douyin. Join: our WeChat group. Learn: first course, Starter badge. Build: a project with your group on GitHub, Builder badge. Share: help a friend from another group, Bridge badge. Douyin is social publishing. WeChat and GitHub are social community. No paid ads. (40 s)<br><b>If asked:</b> No YouTube or Instagram: blocked in mainland China. WeChat use is linked with better adaptation of international students (Zhang &amp; Ting, 2024).">
   <div class="photo dim shade-v"><img data-a="s2-ladder" alt=""></div>
   <div class="label r">The ladder</div>
   <h2 class="r" style="font-size:96px">Five small steps.</h2>
@@ -763,7 +783,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 10 ACTIVITIES -->
-<section class="slide">
+<section class="slide" data-notes="<b>Say:</b> Three activities, each from the data. One: Bridge Seeds. The data says bridges spread further, so the first 8 to 10 students are bridges, chosen by friends from other groups. Two: Qwen Lessons. 58% lack skills, so four short videos, one task each. Three: Build Together. Groups of three, mixed countries, build a project in four weeks and show it at Demo Day. (45 s)<br><b>If asked:</b> Lessons: business (clean a sales sheet), design (mood board), research (find and check papers, catch AI mistakes), thesis (better slides).">
   <div class="label r">What we do</div>
   <h2 class="r" style="font-size:96px">Three activities.</h2>
   <div class="tri">
@@ -774,7 +794,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 10b POSTERS -->
-<section class="slide" id="s-posters">
+<section class="slide" id="s-posters" data-notes="<b>Say:</b> Here are the posters, one per activity. Bridge Seeds goes into WeChat groups. The lesson poster goes with the Douyin videos. Demo Day is for week 4. Every poster has a QR code to the WeChat group, so I can count who joins from where. (30 s)<br><b>If asked:</b> These are concepts; the QR codes are placeholders.">
   <div class="label r">Posters · one per activity</div>
   <h2 class="r" style="font-size:76px">What students will see.</h2>
   <div class="posters">
@@ -801,7 +821,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 11 TEST -->
-<section class="slide" id="s-test">
+<section class="slide" id="s-test" data-notes="<b>Say:</b> How do I know it works? A pilot with 100 to 200 students. Every invite link shows who brought whom, plus one question: who do you ask for AI help? That gives me a real network, and I measure it in NodeXL. Three hypotheses link network metrics to results. One: students with higher betweenness bring more sign-ups from other groups. Two: students with higher degree get more friends to earn badges. Three: students who span structural holes earn more Bridge badges and stay active longer. (45 s)<br><b>If asked:</b> Sign-ups are counts, so negative binomial or Poisson regression. Staying active is yes/no, so logistic regression. Control for how active each student is anyway.">
   <div class="photo shade-l tst-photo"><img data-a="s3-chrome" alt=""></div>
   <div class="tst">
     <div class="label r">Evaluation model · pilot of 100–200 students</div>
@@ -816,7 +836,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 12 LIMITS + AI -->
-<section class="slide" id="s-limits">
+<section class="slide" id="s-limits" data-notes="<b>Say:</b> To be honest, what is weak: the data is a stand-in, students at Caltech in 2005, not international students in China. I haven't run the campaign yet, and credits are not agreed. About AI: it helped me find the data, run the analysis and check sources. But it can't know real people, so it can't choose good bridge students. I checked every number myself. (40 s)">
   <div class="photo dim shade-v"><img data-a="s3-chrome" alt=""></div>
   <div class="label r">Honest limits</div>
   <h2 class="r" style="font-size:96px">What is weak.</h2>
@@ -829,7 +849,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 13 END: conclusion + thank you -->
-<section class="slide" id="s-end" data-scene="faint">
+<section class="slide" id="s-end" data-scene="faint" data-notes="<b>Say:</b> To conclude. Students use AI, but not well. Qwen Academy fixes it: learn, earn a badge, get credits, and help a friend so you both win. And the data says where to start: with bridge students, who carry the skill into more groups. Learn AI by building. Thank you. Questions? (25 s)">
   <div class="photo shade-v"><img data-a="h6-ending" alt=""></div>
   <div class="label r">Conclusion</div>
   <h2 class="r end-h">Learn AI by <span class="grad">building.</span></h2>
@@ -842,7 +862,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- BACKUP: full results -->
-<section class="slide">
+<section class="slide" data-notes="<b>Backup, only if asked.</b> Same game at 3 different chances. At 1% and 2%, bridges clearly beat random. At 3% the skill reaches every house whoever starts: when sharing is easy, everyone wins. Popular and bridge students are almost the same here, because at Caltech the most popular students also have the most friends in other houses (66 vs 67 outside friends on average).">
   <div class="kicker r">Backup · full results</div>
   <h2 class="r" style="font-size:72px">Same game, 3 settings.</h2>
   <div class="glass tbw r"><table class="tb">
@@ -861,7 +881,10 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 </div>
-<div id="tv"><video muted playsinline preload="auto"></video></div><div id="notes"></div><div id="count"></div>
+<div id="tv"><video muted playsinline preload="auto"></video></div><div id="notes"></div>
+<div id="bar"><button id="bPrev" aria-label="Back">&#8592;</button><span id="count"></span><button id="bNext" aria-label="Next">&#8594;</button><span class="sep"></span><button id="bNotes">Notes</button><button id="bFull">Full screen</button><button id="bPhone">Phone</button></div>
+<div id="phoneOv" hidden><div class="pcard"><button class="px" aria-label="Close">&#215;</button><p class="pk">Phone remote</p><h2>Scan to control the slides and read your notes</h2><div class="pqr"></div><p class="purl"></p><p class="pstat"></p></div></div>
+<script src="vendor/qrcode.js"></script>
 <script src="assets/net.js"></script>
 <script src="assets/fx.js?v=4"></script>
 <script>
@@ -985,7 +1008,7 @@ function landTV(t){
   setTimeout(()=>{tvBox.style.display='none';Object.assign(tvVid.style,{objectPosition:'',transform:'',transformOrigin:'',transition:''})},full?800:1450);
 }
 TV.forEach(t=>{t.src=`assets/new/${t.name}.mp4`});
-// once the page has loaded, pull the clips into memory so they start instantly (no network wait mid-transition)
+// once the page has loaded, pull the clips into memory so they start instantly and can seek (no network wait mid-transition)
 addEventListener('load',()=>setTimeout(async()=>{for(const t of TV){try{const r=await fetch(t.src);if(r.ok)t.src=URL.createObjectURL(await r.blob())}catch(e){}}},800));
 function next(){
   if(tvOn)return endTV();
@@ -995,21 +1018,23 @@ function prev(){if(tvOn)return endTV();const on=[...slides[i].querySelectorAll('
 function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src=`assets/new/${name}.${exts[k]}`;
   if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
   else{const im=new Image();im.onload=()=>ok(src);im.onerror=()=>go1(k+1);im.src=src}};go1(0)}
-const IMG=['webp','png','jpg','jpeg'];
+const IMG=['png','jpg','jpeg','webp'];
 document.querySelectorAll('img[data-a]').forEach(el=>{el.decoding='async';el.src=`assets/new/${el.dataset.a}.webp`});
 document.querySelectorAll('video[data-a]').forEach(el=>tryAsset(el.dataset.a,['mp4'],src=>{el.src=src;if(el.closest('.slide.active')&&el.id!=='introVid')el.play().catch(()=>{})}));
 [['bz','m1-bronze'],['sv','m2-silver'],['gd','m3-gold']].forEach(([c,n])=>tryAsset(n,['webp'],src=>document.querySelectorAll('.badge.'+c).forEach(b=>{b.classList.add('img');b.style.background=`url(${src})`})));
 // ---- presenter view + phone remote (only when opened through server.py) ----
 const PREVIEW=location.search.includes('preview');
-const LIVE=false; // shared copy: no phone remote
+let LIVE=false; // turns on only when the presenting server (Start Presenting.command) answers; on the public site there is no phone remote
 const slideTitle=sl=>{const h=sl&&sl.querySelector('h1,h2');return h?h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Video'};
 function syncState(){
   if(!LIVE)return;
   fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length-1,notes:slides[i].dataset.notes||'',
     title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
 }
-if(LIVE){
-  let since=null;setInterval(syncState,2000);
+document.getElementById('bPhone').style.display='none';
+if(!PREVIEW&&location.protocol.startsWith('http'))fetch('/api/info',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(info=>{if(!info||!info.ips)return;LIVE=true;document.getElementById('bPhone').style.display='';startLive()}).catch(()=>{});
+function startLive(){
+  let since=null;setInterval(syncState,2000);syncState();
   (async function poll(){
     try{const r=await (await fetch('/api/cmd?since='+(since??0),{cache:'no-store'})).json();
       if(since===null)since=r.id;else for(const c of r.cmds){since=Math.max(since,c.id);
@@ -1018,17 +1043,38 @@ if(LIVE){
   })();
 }
 if(PREVIEW){
-  count.style.display='none';
+
   addEventListener('hashchange',()=>{const n=+location.hash.slice(1)||0;i=n;render(n);slides[n].querySelectorAll('.step').forEach(e=>e.classList.add('on'));if(window.FX)FX.step(slides[n],9)});
 }
+// ---- bottom bar: back / next, Notes, Full screen, Phone (QR). Fades out after 3 s without the mouse; click on it never advances the slide ----
+const bar=document.getElementById('bar'),ov=document.getElementById('phoneOv'),$b=id=>document.getElementById(id);
+if(PREVIEW)document.documentElement.classList.add('pv');
+let idleT;const wake=()=>{bar.classList.remove('idle');clearTimeout(idleT);idleT=setTimeout(()=>{if(ov.hidden)bar.classList.add('idle')},3000)};
+['mousemove','keydown','touchstart'].forEach(ev=>addEventListener(ev,wake,{passive:true}));wake();
+bar.addEventListener('click',e=>e.stopPropagation());ov.addEventListener('click',e=>{e.stopPropagation();if(e.target===ov)ov.hidden=true});
+const toggleNotes=()=>{notes.classList.toggle('show');$b('bNotes').classList.toggle('on',notes.classList.contains('show'))};
+const toggleFull=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+async function togglePhone(){
+  if(!LIVE)return;
+  ov.hidden=!ov.hidden;if(ov.hidden)return;
+  let url=location.origin+'/remote',msg='';
+  try{const r=await (await fetch('/api/info',{cache:'no-store'})).json();
+    if(r.ips&&r.ips.length&&/^(localhost|127\.)/.test(location.hostname))url='http://'+r.ips[0]+':'+location.port+'/remote';
+    if(!r.ips||!r.ips.length)msg='No network yet: join your phone hotspot, then reload.'}catch(e){msg='Open the deck through Start Presenting.command to use the phone remote.'}
+  try{const qr=qrcode(0,'M');qr.addData(url);qr.make();ov.querySelector('.pqr').innerHTML=qr.createSvgTag(6,2)}catch(e){}
+  ov.querySelector('.purl').textContent=url;ov.querySelector('.pstat').textContent=msg||'Phone and laptop on the same Wi-Fi or hotspot. No internet needed.';
+}
+$b('bPrev').onclick=()=>prev();$b('bNext').onclick=()=>next();$b('bNotes').onclick=toggleNotes;$b('bFull').onclick=toggleFull;$b('bPhone').onclick=togglePhone;
+ov.querySelector('.px').onclick=()=>ov.hidden=true;
+addEventListener('keydown',e=>{if(e.key==='p'||e.key==='P')togglePhone();else if(e.key==='Escape')ov.hidden=true});
 addEventListener('keydown',e=>{
   if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next()}
   else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
-  else if(e.key==='n'||e.key==='N')notes.classList.toggle('show');
-  else if(e.key==='f'||e.key==='F')document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+  else if(e.key==='n'||e.key==='N')toggleNotes();
+  else if(e.key==='f'||e.key==='F')toggleFull();
   else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
 });
-addEventListener('click',e=>{if(!notes.contains(e.target))next()});
+addEventListener('click',e=>{if(!notes.contains(e.target)&&!bar.contains(e.target)&&!ov.contains(e.target))next()});
 i=Math.min(+location.hash.slice(1)||0,slides.length-1);render(i);
 // preview (presenter view, exports): open with every step shown
 if(PREVIEW){slides[i].querySelectorAll('.step').forEach(e=>e.classList.add('on'));if(window.FX)FX.step(slides[i],9)}
