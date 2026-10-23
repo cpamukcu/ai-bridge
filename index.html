@@ -432,7 +432,7 @@ img[data-a]:not([src]){visibility:hidden}
 /* 14 test */
 .tst{width:980px}
 .tst-photo{background:#101011}
-.tst-photo img{transform:translateX(42%)} /* keep the chrome shape right of the text */
+.tst-photo img{transform:translateX(32%)} /* keep the chrome shape right of the text */
 .tst h2{font-size:64px}
 .hyp{display:grid;gap:22px;margin-top:44px}
 .hy{padding:30px 38px}
@@ -611,7 +611,7 @@ img[data-a]:not([src]){visibility:hidden}
 /* activities: same divider height in every card */
 .rs .fix{min-height:122px;box-sizing:border-box}
 /* posters: same rhythm in every card */
-.poster .art{height:230px}
+.poster .art{height:290px;margin-top:0}
 .poster h3{min-height:100px}
 .poster p{min-height:86px}
 .poster .foot{padding-top:10px}
@@ -628,8 +628,31 @@ img[data-a]:not([src]){visibility:hidden}
 .tst .hy:last-child::before{background:#FF9F0A;box-shadow:0 0 18px #FF9F0A}
 .tst .hy{overflow:visible}
 /* AI-generated video mark */
-.aigen{position:absolute;right:22px;bottom:20px;z-index:2;font:600 15px/1 -apple-system,"Inter",sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.88);padding:8px 14px;border-radius:99px;background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.2);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.photo:has(video.alive.on)::before{content:"AI generated";position:absolute;right:22px;bottom:20px;z-index:3;font:600 15px/1 -apple-system,"Inter",sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.88);padding:8px 14px;border-radius:99px;background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.2)}
+.photo:has(video.alive.on)::before{content:"AI generated";position:absolute;right:40px;bottom:36px;z-index:3;font:600 20px/1 -apple-system,"Inter",sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.9);padding:11px 20px;border-radius:99px;background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.22)}
+.tv-leaving .tst .hyp::before,.tv-leaving .tst .hy::before{opacity:0;transition:opacity .4s}
+/* logos centered */
+.ws{display:flex;flex-direction:column;align-items:center;text-align:center}
+.ws .ic{margin:0 auto 26px}
+.rs:has(.rs-ic){align-items:center;text-align:center}
+.rs:has(.rs-ic) .rs-ic{margin:0 auto}
+.rs:has(.rs-ic) .fix{align-self:stretch}
+.rs:has(.rs-ic) .rs-ic{left:50%;right:auto;transform:translateX(-50%)}
+.rs:has(.rs-ic) .gl-lbl{position:absolute;top:40px;left:46px}
+.rs:has(.rs-ic) h3{margin-top:112px}
+/* ladder: bigger type, centered logos */
+.ladder .rung{align-items:center;text-align:center;padding:44px 28px 38px}
+.ladder .rung .n{font-size:26px;opacity:.7;margin-bottom:6px}
+.ladder .rung .st{font-size:24px;margin-top:0}
+.ladder .rung h3{font-size:70px;margin:20px 0 14px}
+.ladder .rung p{font-size:30px;line-height:1.3}
+.ladder .rf{align-self:stretch;align-items:center;text-align:center;gap:18px}
+.ladder .rf .ic{height:92px;justify-content:center}
+.ladder .rf .badge{width:92px;height:92px}
+.ladder .rf .pf img{height:38px}.ladder .rf .pf{padding:10px 18px}
+.ladder .rf .ic>img{height:70px!important;border-radius:16px!important}
+.ladder .rf .me{font-size:25px;min-height:2.6em}
+.ladder .rf{flex:none;height:215px;box-sizing:border-box;justify-content:flex-start}
+.ladder .rf .me{min-height:0}
 </style>
 </head>
 <body>
@@ -649,19 +672,6 @@ img[data-a]:not([src]){visibility:hidden}
     <span class="lg"><img src="assets/logos/alibaba-cloud-mark.png" alt="" style="height:30px">Alibaba Cloud</span>
     <span class="sep"></span>
     <img class="zju" src="assets/logos/zju-logo.png" alt="Zhejiang University"><span>Can Pamukcu · Social Media Marketing</span>
-  </div>
-</section>
-
-<!-- 1b ROADMAP -->
-<section class="slide road-s" id="s-road" data-notes="Four parts. The problem. The idea. The proof. The plan. Let&#x27;s go.">
-  <div class="photo dim shade-v"><img data-a="h2-problem" alt=""></div>
-  <div class="label r">Today</div>
-  <h2 class="r">What I'll show you.</h2>
-  <div class="road">
-    <div class="rstep glass r"><div class="rn grad">1</div><h3>The problem</h3><p>Students use AI, but not well</p></div>
-    <div class="rstep glass r"><div class="rn grad">2</div><h3>The idea</h3><p>Qwen Academy: badges and credits</p></div>
-    <div class="rstep glass r"><div class="rn grad">3</div><h3>The proof</h3><p>Who should start first? Real network data</p></div>
-    <div class="rstep glass key r"><div class="rn amber">4</div><h3>The plan</h3><p>How I test it, and what is weak</p></div>
   </div>
 </section>
 
@@ -830,16 +840,16 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 9 LADDER -->
-<section class="slide" data-notes="This is the ladder from our class: awareness, engagement, conversion, retention, advocacy. Five steps, one metric each. Step one: students see a 1-minute Qwen lesson on Douyin. Step two: they join our WeChat group. Step three: they start the first course and get the Starter badge. Step four: they stay and build a group project on GitHub, and get the Builder badge. Step five: they help a friend from another group and get the Bridge badge. We don&#x27;t use paid ads. Students come from social media and from friends.">
+<section class="slide" data-notes="This is the ladder from our class: awareness, engagement, conversion, retention, advocacy. Five steps, one metric each. Discover: students watch a 1-minute Qwen lesson on Douyin. Connect: they join our WeChat group. Learn: they start the first course and get the Starter badge. Create: they build a group project on GitHub and get the Builder badge. Spread: they invite a friend from another group and get the Bridge badge. We don&#x27;t use paid ads. Students come from social media and from friends.">
   <div class="photo dim shade-v"><img data-a="s2-ladder" alt=""></div>
   <div class="label r">The ladder</div>
   <h2 class="r" style="font-size:96px">Five small steps.</h2>
   <div class="ladder">
-    <div class="rung glass r" style="--i:0"><div class="n">1</div><div class="st">They see it</div><h3>See</h3><p>1-minute Qwen lesson</p><div class="rf"><span class="ic"><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span></span><span class="me">Views</span></div></div>
-    <div class="rung glass r" style="--i:1"><div class="n">2</div><div class="st">They join</div><h3>Join</h3><p>Our student group</p><div class="rf"><span class="ic"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:52px;border-radius:12px"></span><span class="me">New members</span></div></div>
-    <div class="rung glass r" style="--i:2"><div class="n">3</div><div class="st">They start</div><h3>Learn</h3><p>First course</p><div class="rf"><span class="ic"><div class="badge bz mini" id="bz"><b>1</b></div></span><span class="me">Starter badges</span></div></div>
-    <div class="rung glass r" style="--i:3"><div class="n">4</div><div class="st">They stay</div><h3>Build</h3><p>Group project on GitHub</p><div class="rf"><span class="ic"><div class="badge sv mini" id="sv"><b>2</b></div></span><span class="me">Still active after 4 weeks</span></div></div>
-    <div class="rung glass key r" style="--i:4"><div class="n">5</div><div class="st amber">They tell friends</div><h3>Share</h3><p>Help a friend from another group</p><div class="rf"><span class="ic"><div class="badge gd mini" id="gd"><b>3</b></div></span><span class="me">Friends invited</span></div></div>
+    <div class="rung glass r" style="--i:0"><div class="n">1</div><div class="st">Discover</div><h3>Watch</h3><p>1-minute Qwen lesson</p><div class="rf"><span class="ic"><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span></span><span class="me">Views</span></div></div>
+    <div class="rung glass r" style="--i:1"><div class="n">2</div><div class="st">Connect</div><h3>Join</h3><p>Our student group</p><div class="rf"><span class="ic"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:52px;border-radius:12px"></span><span class="me">New members</span></div></div>
+    <div class="rung glass r" style="--i:2"><div class="n">3</div><div class="st">Learn</div><h3>Start</h3><p>First course</p><div class="rf"><span class="ic"><div class="badge bz mini" id="bz"><b>1</b></div></span><span class="me">Starter badges</span></div></div>
+    <div class="rung glass r" style="--i:3"><div class="n">4</div><div class="st">Create</div><h3>Build</h3><p>Group project on GitHub</p><div class="rf"><span class="ic"><div class="badge sv mini" id="sv"><b>2</b></div></span><span class="me">Active after 4 weeks</span></div></div>
+    <div class="rung glass key r" style="--i:4"><div class="n">5</div><div class="st amber">Spread</div><h3>Invite</h3><p>Help a friend from another group</p><div class="rf"><span class="ic"><div class="badge gd mini" id="gd"><b>3</b></div></span><span class="me">Friends invited</span></div></div>
   </div>
   <div class="src">Douyin = social publishing · WeChat and GitHub = social community · no paid ads</div>
 </section>
@@ -861,19 +871,16 @@ img[data-a]:not([src]){visibility:hidden}
   <h2 class="r" style="font-size:76px">What students will see.</h2>
   <div class="posters">
     <div class="poster glass r">
-      <div class="brand"><img src="assets/logos/qwen-mark.png" alt="" style="background:#fff;padding:3px">QWEN ACADEMY</div>
       <img class="art" data-a="s1-network" alt="">
       <h3>Be a Bridge Seed.</h3><p>Friends in other groups? Get the first Qwen credits and a short training.</p>
       <div class="foot"><span class="lg" style="gap:8px"><img src="assets/logos/wechat-logo.png" alt="" style="height:30px;border-radius:6px"></span><span class="qr"></span></div>
     </div>
     <div class="poster glass r">
-      <div class="brand"><img src="assets/logos/qwen-mark.png" alt="" style="background:#fff;padding:3px">QWEN ACADEMY</div>
       <img class="art" data-a="s2-ladder" alt="">
       <h3>AI in 10 minutes.</h3><p>4 short Qwen lessons. 1 real task each. Earn your Starter badge.</p>
       <div class="foot"><span style="background:#fff;border-radius:10px;padding:6px 10px"><img src="assets/logos/douyin-logo.svg" alt="Douyin" style="height:26px"></span><span class="qr"></span></div>
     </div>
     <div class="poster glass r">
-      <div class="brand"><img src="assets/logos/qwen-mark.png" alt="" style="background:#fff;padding:3px">QWEN ACADEMY</div>
       <img class="art" data-a="h4-who" alt="">
       <h3>Demo Day.</h3><p>Build with 2 friends from other countries. Show it in 3 minutes.</p>
       <div class="foot"><span>Week 4 · on GitHub</span><span class="qr"></span></div>
@@ -884,7 +891,7 @@ img[data-a]:not([src]){visibility:hidden}
 
 <!-- 11 TEST -->
 <section class="slide" id="s-test" data-notes="How do I know it works? I test it. A pilot with 100 to 200 students. Every invite link shows which student brought which friend. Plus one question: who do you ask for AI help? That gives me a real network, and I measure it in NodeXL. I have three hypotheses. One: a student with higher betweenness brings more sign-ups from other groups. Two: a student with higher degree has more invited friends who earn badges. Three: a student who spans structural holes earns more Bridge badges and stays active longer.">
-  <div class="photo shade-l tst-photo"><img data-a="s3-chrome" alt=""></div>
+  <div class="photo shade-l tst-photo" id="tstPhoto"><img data-a="s3-chrome" alt=""></div>
   <div class="tst">
     <div class="label r">Evaluation model · pilot of 100–200 students</div>
     <h2 class="r">Network metrics → <span class="grad">results.</span></h2>
@@ -910,27 +917,10 @@ img[data-a]:not([src]){visibility:hidden}
   <p class="lead r thanks">Thank you. Questions?</p>
 </section>
 
-<!-- BACKUP: full results -->
-<section class="slide" data-notes="Same game, three different chances of passing the skill. At 1% and 2%, bridges clearly beat random starters. At 3%, the skill reaches every house no matter who starts. When sharing is easy, everyone wins. Popular students and bridge students are almost the same here, because at Caltech the most popular students also have the most friends in other houses. 66 versus 67 outside friends, on average.">
-  <div class="kicker r">Backup · full results</div>
-  <h2 class="r" style="font-size:72px">Same game, 3 settings.</h2>
-  <div class="glass tbw r"><table class="tb">
-    <tr><th>Chance per friend</th><th>Starters</th><th>People reached in other houses</th><th>Other houses reached (of 7)</th></tr>
-    <tr><td rowspan="3">1%</td><td>Random</td><td class="n">3.2</td><td class="n">0.3</td></tr>
-    <tr><td>Most popular</td><td class="n">7.7</td><td class="n">1.0</td></tr>
-    <tr class="hl"><td>Bridges</td><td class="n">7.9</td><td class="n">1.0</td></tr>
-    <tr><td rowspan="3"><b>2% (on slide)</b></td><td>Random</td><td class="n">49.1</td><td class="n">4.2</td></tr>
-    <tr><td>Most popular</td><td class="n">71.4</td><td class="n">6.0</td></tr>
-    <tr class="hl"><td>Bridges</td><td class="n">71.9</td><td class="n">6.0</td></tr>
-    <tr><td rowspan="3">3%</td><td>Random</td><td class="n">187.8</td><td class="n">6.7</td></tr>
-    <tr><td>Most popular</td><td class="n">198.7</td><td class="n">7.0</td></tr>
-    <tr class="hl"><td>Bridges</td><td class="n">197.8</td><td class="n">7.0</td></tr>
-  </table></div>
-  <div class="src">5 starters from one house · 300 runs × 8 houses per row · a house counts as reached when 3+ people learned · code: data_caltech/analysis.py</div>
-</section>
+
 
 </div>
-<div id="tv"><video muted playsinline preload="auto"></video><span class="aigen">AI generated</span></div><div id="notes"></div>
+<div id="tv"><video muted playsinline preload="auto"></video></div><div id="notes"></div>
 <div id="bar"><button id="bPrev" aria-label="Back">&#8592;</button><span id="count"></span><button id="bNext" aria-label="Next">&#8594;</button><span class="sep"></span><button id="bNotes">Notes</button><button id="bFull">Full screen</button><button id="bPhone">Phone</button></div>
 <div id="phoneOv" hidden><div class="pcard"><button class="px" aria-label="Close">&#215;</button><p class="pk">Phone remote</p><h2>Scan to control the slides and read your notes</h2><div class="pqr"></div><p class="purl"></p><p class="pstat"></p></div></div>
 <script src="vendor/qrcode.js"></script><script src="vendor/mqtt.min.js"></script>
@@ -951,12 +941,12 @@ function render(n){
   slides.forEach((s,k)=>{s.classList.toggle('active',k===n);s.classList.remove('tv-leaving','tv-land')});
   const s=slides[n];
   if(s.id==='s-title')ttlOffsets();
-  notes.innerHTML=`<b>${n+1}/${slides.length-1}</b> &nbsp; `+(s.dataset.notes||'');
-  count.textContent=n<slides.length-1?`${n+1} / ${slides.length-1}`:'Backup';
+  notes.innerHTML=`<b>${n+1}/${slides.length}</b> &nbsp; `+(s.dataset.notes||'');
+  count.textContent=`${n+1} / ${slides.length}`;
   document.querySelectorAll('video').forEach(v=>{if(!s.contains(v))v.pause()});
   s.querySelectorAll('video').forEach(v=>{if(v===tvVid)return;v.currentTime=0;if(v.id==='introVid')v.pause();else v.play().catch(()=>{})});
   location.hash=n;
-  if(window.FX)FX.enter(s,n+1,slides.length-1,s.querySelectorAll('.step.on').length);
+  if(window.FX)FX.enter(s,n+1,slides.length,s.querySelectorAll('.step.on').length);
   if(typeof syncState==='function')syncState();
 }
 const names=sl=>new Set([...sl.querySelectorAll('[style*="view-transition-name"],#bz,#sv,#gd')].map(e=>getComputedStyle(e).viewTransitionName).filter(x=>x&&x!=='none'));
@@ -988,7 +978,7 @@ function go(n,back){
 const TV=[{from:'s-title',name:'t1-title-problem',a:'h1-title',b:'h2-problem',inplace:true},
           {from:'s-problem',name:'t2-problem-reasons',a:'h2-problem',b:'s1-network',inplace:true},
           {from:'s-idea',name:'t3-idea-who',a:'h3-idea',b:'h4-who',inplace:true,drift:true},
-          {from:'s-test',name:'t5-limits-end',a:'s3-chrome',b:'h6-ending',inplace:true}];
+          {from:'s-test',name:'t5-limits-end',a:'#tstPhoto',b:'h6-ending',inplace:true}];
 const tvBox=document.getElementById('tv'),tvVid=tvBox.querySelector('video');let tvOn=null;
 const pick=(sl,a)=>sl.querySelector(a.startsWith('#')?a:`[data-a="${a}"]`);
 const place=r=>Object.assign(tvBox.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
@@ -1093,7 +1083,7 @@ let LIVE=false; // turns on only when the presenting server (Start Presenting.co
 const slideTitle=sl=>{const h=sl&&sl.querySelector('h1,h2');return h?h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Video'};
 function syncState(){
   if(!LIVE){if(window.mqttPublish)mqttPublish();return}
-  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length-1,notes:slides[i].dataset.notes||'',
+  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length,notes:slides[i].dataset.notes||'',
     title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
 }
 if(PREVIEW||!location.protocol.startsWith('http'))document.getElementById('bPhone').style.display='none';
@@ -1135,7 +1125,7 @@ function mqttStart(){
       c.on('message',(t,p)=>{try{const m=JSON.parse(p.toString());if(!m||!m.id||mqSeen[m.id])return;mqSeen[m.id]=1;
         if(m.a==='next')next();else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
       mq.push(c)}catch(e){}});
-  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length-1,t:Date.now()});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
+  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now()});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
   setInterval(()=>window.mqttPublish(),10000);
 }
 async function togglePhone(){
