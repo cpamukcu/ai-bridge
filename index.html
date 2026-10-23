@@ -355,13 +355,11 @@ img[data-a]:not([src]){visibility:hidden}
 .acad .bcol.key{border-color:rgba(255,159,10,.55);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -18px 40px rgba(255,159,10,.12),0 0 60px -10px rgba(255,159,10,.25),0 40px 80px -30px rgba(0,0,0,.7)}
 /* gold medal: slow glow + a shine passing over it */
-.acad .gd{overflow:hidden;animation:goldGlow 3.2s ease-in-out infinite}
-.acad .gd::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:40%;transform:skewX(-20deg);
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:shine 4.5s ease-in-out infinite}
+.acad .gd{animation:goldGlow 3.2s ease-in-out infinite}
 @keyframes goldGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,159,10,0)) drop-shadow(0 18px 28px rgba(0,0,0,.55))}
   50%{filter:drop-shadow(0 0 36px rgba(255,159,10,.65)) drop-shadow(0 18px 28px rgba(0,0,0,.55))}}
 @keyframes shine{0%,45%{left:-60%}85%,100%{left:120%}}
-@media (prefers-reduced-motion:reduce){.acad .gd,.acad .gd::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.acad .gd{animation:none}}
 
 /* ===== shared parts for the other slides ===== */
 .photo.dim img{opacity:.38}
@@ -434,7 +432,7 @@ img[data-a]:not([src]){visibility:hidden}
 /* 14 test */
 .tst{width:980px}
 .tst-photo{background:#101011}
-.tst-photo img{transform:translateX(30%)} /* keep the chrome shape right of the text */
+.tst-photo img{transform:translateX(42%)} /* keep the chrome shape right of the text */
 .tst h2{font-size:64px}
 .hyp{display:grid;gap:22px;margin-top:44px}
 .hy{padding:30px 38px}
@@ -536,8 +534,8 @@ img[data-a]:not([src]){visibility:hidden}
 .acad .bcol .cr{margin-top:auto;padding-top:0}
 .acad .bcol p{margin-bottom:20px}
 .acad .bcol .cr{background:none!important;border-radius:0;box-shadow:none;backdrop-filter:none;width:100%;align-self:stretch;justify-self:stretch;text-align:center;margin-top:auto;padding:16px 0 0;border-top:1px solid rgba(255,255,255,.18);font-size:22px;font-weight:600;white-space:nowrap;color:#5AC8FA}
-.acad .bcol .cr{display:flex;align-items:center;justify-content:center;gap:12px}
-.acad .bcol .cr img{width:84px;height:84px;margin:-22px 0;mix-blend-mode:screen;flex:none}
+.acad .bcol .cr{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.acad .bcol .cr img{width:76px;height:76px;margin:-6px 0 0;flex:none}
 .acad .bcol.key .cr{color:#FF9F0A;border-top-color:rgba(255,159,10,.45)}
 /* 8: app header + tab bar, all badges in color */
 .scr .li{padding:11px 0}
@@ -585,13 +583,57 @@ img[data-a]:not([src]){visibility:hidden}
 .idea-lines circle{fill:#5AC8FA;filter:drop-shadow(0 0 8px #5AC8FA)}
 @keyframes flowIn{from{stroke-dashoffset:460}to{stroke-dashoffset:0}}
 @media (prefers-reduced-motion:reduce){.idea-lines .flow{animation:none;opacity:0}}
+/* roadmap slide */
+.road-s h2{font-size:96px}
+.road{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:200px}
+.road::before{content:"";position:absolute;left:0;right:0;top:-38px;height:3px;border-radius:3px;background:linear-gradient(90deg,#0A84FF,#5AC8FA 70%,#FF9F0A)}
+.rstep{padding:52px 40px 56px;min-height:380px;overflow:visible;text-align:left}
+.rstep::before{content:"";position:absolute;left:40px;top:-47px;width:18px;height:18px;border-radius:50%;background:#5AC8FA;box-shadow:0 0 18px #5AC8FA}
+.rstep.key::before{background:#FF9F0A;box-shadow:0 0 18px #FF9F0A}
+.rstep .rn{font-size:96px;font-weight:700;line-height:1;letter-spacing:-.04em}
+.rstep .rn.amber{color:var(--amber,#FF9F0A)}
+.rstep h3{font-size:46px;margin-top:34px}
+.rstep p{font-size:30px;color:rgba(255,255,255,.7);margin-top:12px;line-height:1.3}
+/* ---- polish pass ---- */
+.dsrc{max-width:880px;line-height:1.35;bottom:40px;font-size:19px}
+/* ladder */
+.ladder{align-items:stretch;gap:22px;margin-top:80px}
+.ladder .rung{display:flex;flex-direction:column;min-height:580px;padding:42px 34px 38px}
+.ladder .rung .n{font-size:22px;opacity:.55}
+.ladder .rung .st{font-size:20px;letter-spacing:.06em;margin-top:4px}
+.ladder .rung h3{font-size:58px;margin:18px 0 12px}
+.ladder .rung p{font-size:26px;color:rgba(255,255,255,.72)}
+.ladder .rf{margin-top:auto;padding-top:22px;border-top:1px solid rgba(255,255,255,.16);display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.ladder .rf .ic{height:64px;flex:none;display:flex;align-items:center}
+.ladder .rf .badge{width:64px;height:64px;margin:0}
+.ladder .rf .pf{margin:0;padding:6px 12px}.ladder .rf .pf img{height:26px}
+.ladder .rf .me{font-size:22px;line-height:1.25;margin:0;color:rgba(255,255,255,.8)}
+/* activities: same divider height in every card */
+.rs .fix{min-height:122px;box-sizing:border-box}
+/* posters: same rhythm in every card */
+.poster .art{height:230px}
+.poster h3{min-height:100px}
+.poster p{min-height:86px}
+.poster .foot{padding-top:10px}
+.qr{width:70px;height:70px}
+/* phone badge row */
+.scr .row{justify-content:space-between;gap:0;padding:0 2px}
+.scr .row .badge{margin:0}
+/* evaluation slide: connected hypotheses */
+.tst{width:900px}
+.tst .hyp{position:relative;padding-left:64px;gap:20px}
+.tst .hyp::before{content:"";position:absolute;left:19px;top:44px;bottom:44px;width:3px;border-radius:3px;background:linear-gradient(180deg,#0A84FF,#5AC8FA 60%,#FF9F0A)}
+.tst .hy{position:relative}
+.tst .hy::before{content:"";position:absolute;left:-52px;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:#5AC8FA;box-shadow:0 0 18px #5AC8FA}
+.tst .hy:last-child::before{background:#FF9F0A;box-shadow:0 0 18px #FF9F0A}
+.tst .hy{overflow:visible}
 </style>
 </head>
 <body>
 <div id="stage">
 
 <!-- 1 TITLE -->
-<section class="slide" id="s-title" data-scene="title" data-notes="<b>Start here.</b> The picture shows the gap: a student on one island, AI on the other. <b>Say:</b> Hello, I'm Can Pamukcu. This is AI Bridge: a campaign with Alibaba's Qwen to help international students in China use AI well. (pause) Today I want to build a bridge. <b>Click:</b> the bridge builds, then we land on the problem. (15 s + 13 s video)">
+<section class="slide" id="s-title" data-scene="title" data-notes="<b>Start here.</b> The picture shows the gap: a student on one island, AI on the other. <b>Say:</b> Hello, I'm Can Pamukcu. This is AI Bridge: a campaign with Alibaba's Qwen to help international students in China use AI well. (pause) Today I want to build a bridge. <b>Click:</b> the bridge builds, then we land on the roadmap. (15 s + 13 s video)">
   <div class="photo"><img data-a="h1-title" alt=""></div>
   <div>
     <h1 class="r ttl" aria-label="AI Bridge"><span class="w">AI</span> <span class="w grad">Bridge</span></h1>
@@ -604,6 +646,19 @@ img[data-a]:not([src]){visibility:hidden}
     <span class="lg"><img src="assets/logos/alibaba-cloud-mark.png" alt="" style="height:30px">Alibaba Cloud</span>
     <span class="sep"></span>
     <img class="zju" src="assets/logos/zju-logo.png" alt="Zhejiang University"><span>Can Pamukcu · Social Media Marketing</span>
+  </div>
+</section>
+
+<!-- 1b ROADMAP -->
+<section class="slide road-s" id="s-road" data-notes="<b>Say:</b> Four steps today. The problem. The idea. The proof. And the plan. (10 s)<br><b>Click:</b> on to the problem.">
+  <div class="photo dim shade-v"><img data-a="h2-problem" alt=""></div>
+  <div class="label r">Today</div>
+  <h2 class="r">What I'll show you.</h2>
+  <div class="road">
+    <div class="rstep glass r"><div class="rn grad">1</div><h3>The problem</h3><p>Students use AI, but not well</p></div>
+    <div class="rstep glass r"><div class="rn grad">2</div><h3>The idea</h3><p>Qwen Academy: badges and credits</p></div>
+    <div class="rstep glass r"><div class="rn grad">3</div><h3>The proof</h3><p>Who should start first? Real network data</p></div>
+    <div class="rstep glass key r"><div class="rn amber">4</div><h3>The plan</h3><p>How I test it, and what is weak</p></div>
   </div>
 </section>
 
@@ -768,7 +823,7 @@ img[data-a]:not([src]){visibility:hidden}
       </div>
     </div>
   </div>
-  <div class="src">Caltech Facebook network, 2005 (Traud, Mucha &amp; Porter, 2012) · stand-in data · 5 starters per house, 300 runs, 2% chance per friend · bridges = high betweenness centrality (ρ = 0.87)</div>
+  <div class="src dsrc">Caltech Facebook network, 2005 (Traud, Mucha &amp; Porter, 2012) · stand-in data · 5 starters per house, 300 runs, 2% chance per friend · bridges = high betweenness centrality (ρ = 0.87)</div>
 </section>
 
 <!-- 9 LADDER -->
@@ -777,13 +832,13 @@ img[data-a]:not([src]){visibility:hidden}
   <div class="label r">The ladder</div>
   <h2 class="r" style="font-size:96px">Five small steps.</h2>
   <div class="ladder">
-    <div class="rung glass r" style="min-height:400px"><div class="n">1</div><div class="st">Awareness</div><h3>See</h3><p>1-minute Qwen lesson</p><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span><div class="me">Reach · views</div></div>
-    <div class="rung glass r" style="min-height:450px"><div class="n">2</div><div class="st">Engagement</div><h3>Join</h3><p>Our student group</p><span class="pf" style="padding:0;background:none"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:38px;border-radius:8px"></span><div class="me">Engagement rate</div></div>
-    <div class="rung glass r" style="min-height:500px"><div class="n">3</div><div class="st">Conversion</div><h3>Learn</h3><p>First course</p><div class="me">Sign-ups · Starter badges</div><div class="badge bz mini" id="bz"><b>1</b></div></div>
-    <div class="rung glass r" style="min-height:550px"><div class="n">4</div><div class="st">Retention</div><h3>Build</h3><p>Group project</p><span class="pf"><img src="assets/logos/gh-github.png" alt="" style="height:24px;border-radius:50%"> GitHub</span><div class="me">Active after 4 weeks</div><div class="badge sv mini" id="sv"><b>2</b></div></div>
-    <div class="rung glass key r" style="min-height:600px"><div class="n">5</div><div class="st amber">Advocacy</div><h3>Share</h3><p>Help a friend from another group</p><div class="me">Referrals · Bridge badges</div><div class="badge gd mini" id="gd"><b>3</b></div></div>
+    <div class="rung glass r" style="--i:0"><div class="n">1</div><div class="st">They see it</div><h3>See</h3><p>1-minute Qwen lesson</p><div class="rf"><span class="ic"><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span></span><span class="me">Views</span></div></div>
+    <div class="rung glass r" style="--i:1"><div class="n">2</div><div class="st">They join</div><h3>Join</h3><p>Our student group</p><div class="rf"><span class="ic"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:52px;border-radius:12px"></span><span class="me">New members</span></div></div>
+    <div class="rung glass r" style="--i:2"><div class="n">3</div><div class="st">They start</div><h3>Learn</h3><p>First course</p><div class="rf"><span class="ic"><div class="badge bz mini" id="bz"><b>1</b></div></span><span class="me">Starter badges</span></div></div>
+    <div class="rung glass r" style="--i:3"><div class="n">4</div><div class="st">They stay</div><h3>Build</h3><p>Group project on GitHub</p><div class="rf"><span class="ic"><div class="badge sv mini" id="sv"><b>2</b></div></span><span class="me">Still active after 4 weeks</span></div></div>
+    <div class="rung glass key r" style="--i:4"><div class="n">5</div><div class="st amber">They tell friends</div><h3>Share</h3><p>Help a friend from another group</p><div class="rf"><span class="ic"><div class="badge gd mini" id="gd"><b>3</b></div></span><span class="me">Friends invited</span></div></div>
   </div>
-  <div class="src">Douyin = social publishing zone · WeChat, GitHub = social community zone · owned + earned media, no paid ads</div>
+  <div class="src">Douyin = social publishing · WeChat and GitHub = social community · no paid ads</div>
 </section>
 
 <!-- 10 ACTIVITIES -->
@@ -837,19 +892,6 @@ img[data-a]:not([src]){visibility:hidden}
     </div>
     <p class="note r">Network data: invite links + "Who do you ask for AI help?" · measured in NodeXL</p>
   </div>
-</section>
-
-<!-- 12 LIMITS + AI -->
-<section class="slide" id="s-limits" data-notes="<b>Say:</b> To be honest, what is weak: the data is a stand-in, students at Caltech in 2005, not international students in China. I haven't run the campaign yet, and credits are not agreed. About AI: it helped me find the data, run the analysis and check sources. But it can't know real people, so it can't choose good bridge students. I checked every number myself. (40 s)">
-  <div class="photo dim shade-v"><img data-a="s3-chrome" alt=""></div>
-  <div class="label r">Honest limits</div>
-  <h2 class="r" style="font-size:96px">What is weak.</h2>
-  <div class="lim">
-    <div class="glass lm r"><div class="gl-lbl">01</div><p>Stand-in data: <span class="sub">Caltech 2005, not China</span></p></div>
-    <div class="glass lm r"><div class="gl-lbl">02</div><p>Not tested yet, <span class="sub">credits not agreed</span></p></div>
-    <div class="glass lm r"><div class="gl-lbl">03</div><p>AI helped <span class="sub">find data, run the analysis.</span><br>AI can't <span class="sub">pick real bridge students.</span></p></div>
-  </div>
-  <div class="glass disc r"><b>AI disclosure:</b> Claude (Anthropic) helped with data search, analysis code and slide design. Images: Yuanbao. Videos: Google Flow. I checked every number.</div>
 </section>
 
 <!-- 13 END: conclusion + thank you -->
@@ -942,9 +984,7 @@ function go(n,back){
 // inplace: the clip starts where its picture is (never full window), the text leaves, then the last frame lands on the next slide's picture
 const TV=[{from:'s-title',name:'t1-title-problem',a:'h1-title',b:'h2-problem',inplace:true},
           {from:'s-problem',name:'t2-problem-reasons',a:'h2-problem',b:'s1-network',inplace:true},
-          {from:'s-idea',name:'t3-idea-who',a:'h3-idea',b:'h4-who',inplace:true,drift:true},
-          {from:'s-posters',name:'t4-posters-test',a:'s2-ladder',b:'s3-chrome',inplace:true},
-          {from:'s-limits',name:'t5-limits-end',a:'s3-chrome',b:'h6-ending',inplace:true}];
+          {from:'s-idea',name:'t3-idea-who',a:'h3-idea',b:'h4-who',inplace:true,drift:true}];
 const tvBox=document.getElementById('tv'),tvVid=tvBox.querySelector('video');let tvOn=null;
 const pick=(sl,a)=>sl.querySelector(a.startsWith('#')?a:`[data-a="${a}"]`);
 const place=r=>Object.assign(tvBox.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
