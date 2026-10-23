@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Bridge</title>
+<style>
+:root{
+  --ink:#1d1d1f; --gray:#6e6e73; --line:#e5e5ea; --soft:#f5f5f7; --bg:#fff;
+  --coral:#E8604C; --teal:#3FA98A; --yellow:#F2B33D;
+  --ease:cubic-bezier(.22,.8,.24,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;background:var(--bg)}
+.slide{position:absolute;inset:0;padding:120px 140px;display:none}
+.slide.active{display:block}
+
+/* type */
+h1{font-size:150px;font-weight:700;letter-spacing:-.045em;line-height:.95}
+h2{font-size:84px;font-weight:700;letter-spacing:-.035em;line-height:1.02}
+.kicker{font-size:28px;font-weight:600;color:var(--gray);letter-spacing:.02em;margin-bottom:22px}
+.lead{font-size:40px;color:var(--gray);line-height:1.3;letter-spacing:-.01em}
+.big{font-size:220px;font-weight:700;letter-spacing:-.05em;line-height:.9}
+ul.b{list-style:none;margin-top:56px}
+ul.b li{font-size:42px;line-height:1.25;letter-spacing:-.015em;padding:22px 0;border-top:1px solid var(--line)}
+ul.b li:last-child{border-bottom:1px solid var(--line)}
+ul.b li span{color:var(--gray)}
+.src{position:absolute;left:140px;bottom:56px;font-size:20px;color:#a1a1a6}
+.coral{color:var(--coral)}.teal{color:var(--teal)}.yellow{color:#d9951a}
+.grad{background:linear-gradient(90deg,var(--coral),var(--yellow) 50%,var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* image tiles */
+.tile{border-radius:56px;overflow:hidden;background:#f5f5f7;box-shadow:0 30px 80px -30px rgba(0,0,0,.25)}
+.tile img,.tile video{width:100%;height:100%;object-fit:cover;display:block}
+.split{display:grid;grid-template-columns:1fr 760px;gap:110px;align-items:center;height:100%}
+.split.rev{grid-template-columns:760px 1fr}
+.split .tile{width:760px;height:760px}
+
+/* floating clay objects (white backdrop melts into the slide) */
+.tile.float{background:none;box-shadow:none;border-radius:0;overflow:visible}
+.tile.float img{-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 78%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 78%,transparent 100%)}
+.card.cc{color:#fff}.card.cc p{color:rgba(255,255,255,.78)}.card.cc b{color:#fff!important}.card.cc .num{color:rgba(255,255,255,.6)}
+.card.cc img{border-radius:0}
+
+/* entrance animation */
+.slide.active .r{animation:rise .9s var(--ease) both}
+.slide.active .r:nth-child(2){animation-delay:.08s}
+.slide.active .r:nth-child(3){animation-delay:.16s}
+.slide.active .r:nth-child(4){animation-delay:.24s}
+.slide.active .r:nth-child(5){animation-delay:.32s}
+.slide.active .r:nth-child(6){animation-delay:.40s}
+@keyframes rise{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+.slide.active .zoom{animation:zoom 1.2s var(--ease) both}
+@keyframes zoom{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.step{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.step.on{opacity:1;transform:none}
+
+/* view transitions (smooth crossfade + morph of named elements) */
+::view-transition-old(root){animation:.55s var(--ease) both vtOut}
+::view-transition-new(root){animation:.75s var(--ease) both vtIn}
+/* zoom-through: forward dives into the slide's main picture, back pulls out */
+html[data-vt=fwd]::view-transition-old(root){transform-origin:var(--ox) var(--oy);animation:.75s cubic-bezier(.55,0,.35,1) both zDive}
+html[data-vt=fwd]::view-transition-new(root){transform-origin:var(--ox) var(--oy);animation:.95s var(--ease) .12s both zArrive}
+html[data-vt=back]::view-transition-old(root){animation:.7s cubic-bezier(.55,0,.35,1) both zShrink}
+html[data-vt=back]::view-transition-new(root){animation:.9s var(--ease) .08s both zDrop}
+@keyframes zDive{to{transform:scale(2.6);opacity:0;filter:blur(8px)}}
+@keyframes zArrive{from{transform:scale(.8);opacity:0}}
+@keyframes zShrink{to{transform:scale(.78);opacity:0}}
+@keyframes zDrop{from{transform:scale(1.5);opacity:0;filter:blur(8px)}}
+.badge.img{background-size:cover!important;background-position:center!important;box-shadow:none}
+.badge.img::before,.badge.img b{display:none}
+::view-transition-group(*){animation-duration:.9s;animation-timing-function:var(--ease)}
+@keyframes vtOut{to{opacity:0;transform:scale(.985)}}
+@keyframes vtIn{from{opacity:0;transform:scale(1.01)}}
+
+/* slide: intro video */
+#s-intro{padding:0;background:#f2f2ef}
+#s-intro video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hint{position:absolute;right:48px;bottom:40px;font-size:20px;color:rgba(0,0,0,.35)}
+
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:70px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:44px;padding:44px 44px 50px;overflow:hidden}
+.card img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:30px;margin-bottom:34px}
+.card h3{font-size:44px;letter-spacing:-.02em;margin-bottom:12px}
+.card p{font-size:30px;color:var(--gray);line-height:1.3}
+.num{font-size:26px;font-weight:700;color:var(--gray);margin-bottom:14px}
+
+/* badges */
+.badge{width:220px;height:220px;border-radius:50%;display:grid;place-items:center;position:relative;flex:none;
+  box-shadow:inset 0 -14px 24px rgba(0,0,0,.18),inset 0 10px 20px rgba(255,255,255,.55),0 24px 40px -18px rgba(0,0,0,.35)}
+.badge::before{content:"";position:absolute;inset:18px;border-radius:50%;border:4px dashed rgba(255,255,255,.55)}
+.badge b{font-size:90px;color:#fff;font-weight:800;text-shadow:0 4px 0 rgba(0,0,0,.15)}
+.bz{background:radial-gradient(circle at 35% 30%,#f0b07a,#c26b33 70%)}
+.sv{background:radial-gradient(circle at 35% 30%,#f4f6f8,#9aa3ad 72%)}
+.gd{background:radial-gradient(circle at 35% 30%,#ffe08a,#e2a21b 72%)}
+.badges{display:flex;gap:60px;margin-top:80px}
+.bcol{display:flex;flex-direction:column;align-items:center;text-align:center;width:420px}
+.bcol h3{font-size:46px;margin-top:40px;letter-spacing:-.02em}
+.bcol p{font-size:30px;color:var(--gray);line-height:1.3;margin-top:10px}
+.bcol .cr{margin-top:22px;font-size:26px;font-weight:600;background:var(--soft);border-radius:99px;padding:10px 24px}
+#bz{view-transition-name:bz}#sv{view-transition-name:sv}#gd{view-transition-name:gd}
+
+/* win-win table */
+.ww{margin-top:60px;display:grid;grid-template-columns:330px 1fr 1fr;row-gap:0}
+.ww>div{font-size:34px;padding:26px 20px 26px 0;border-top:1px solid var(--line);line-height:1.25}
+.ww .h{font-size:24px;font-weight:600;color:var(--gray);border-top:none;padding-bottom:12px}
+.ww .who{font-weight:700}
+.ww .get{font-weight:600}
+.rule{margin-top:50px;display:inline-block;font-size:40px;font-weight:600;background:var(--soft);padding:24px 40px;border-radius:24px}
+
+/* data slide */
+.data{display:grid;grid-template-columns:800px 1fr;gap:90px;height:100%;align-items:center}
+.net{width:800px;height:800px}
+.fact{font-size:38px;line-height:1.3;margin-top:44px}
+.fact strong{font-size:64px;letter-spacing:-.03em}
+.bars{margin-top:34px}
+.bar{display:grid;grid-template-columns:250px 1fr 190px;align-items:center;gap:24px;margin:22px 0;font-size:32px}
+.track{height:56px;background:var(--soft);border-radius:16px;overflow:hidden}
+.fill{height:100%;border-radius:16px;width:0;transition:width 1.4s var(--ease) .2s}
+.step.on .fill{width:var(--w)}
+.bar .v{font-weight:700;font-size:44px}
+
+/* ladder */
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;margin-top:40px;align-items:end}
+.rung{background:var(--soft);border-radius:36px;padding:34px 30px}
+.rung .n{font-size:24px;color:var(--gray);font-weight:700}
+.rung h3{font-size:46px;letter-spacing:-.02em;margin:8px 0 12px}
+.rung p{font-size:27px;color:var(--gray);line-height:1.3}
+.rung .pf{margin-top:20px;font-size:22px;font-weight:600;display:inline-block;padding:8px 18px;border-radius:99px;background:#fff}
+.mini{width:70px;height:70px;margin-top:18px}
+.mini b{font-size:30px}.mini::before{inset:6px;border-width:2px}
+
+/* closing */
+
+
+/* info cards (Honyar-style density) */
+.stats{display:grid;gap:28px;margin-top:56px}
+.stats.c2{grid-template-columns:repeat(2,1fr)}.stats.c3{grid-template-columns:repeat(3,1fr)}.stats.c4{grid-template-columns:repeat(4,1fr)}
+.stat{background:var(--soft);border-radius:32px;padding:32px 34px}
+.stat .v{font-size:84px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.stat .l{font-size:27px;color:var(--gray);line-height:1.3;margin-top:12px}
+.stat.dark{background:var(--ink);color:#fff}.stat.dark .l{color:#a1a1a6}
+.ic{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;margin-bottom:22px}
+.ic svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bg-c{background:var(--coral)}.bg-t{background:var(--teal)}.bg-y{background:var(--yellow)}.bg-k{background:var(--ink)}
+
+/* proof grid */
+.proof{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:64px}
+.pc{background:var(--soft);border-radius:36px;padding:38px 36px;display:flex;flex-direction:column}
+.pc .co{font-size:24px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}
+.pc h3{font-size:40px;letter-spacing:-.02em;margin:14px 0 18px;line-height:1.1}
+.pc .v{font-size:70px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.pc .l{font-size:25px;color:var(--gray);margin-top:8px;line-height:1.3}
+.pc .yr{margin-top:auto;padding-top:26px;font-size:22px;color:#a1a1a6}
+.gap{margin-top:34px;display:grid;grid-template-columns:auto 1fr;gap:34px;align-items:center;background:#fff5df;border-radius:32px;padding:30px 40px}
+.gap img{width:64px;height:64px}
+.gap p{font-size:34px;line-height:1.3}
+
+/* phone mockup */
+.phone{width:460px;height:900px;border-radius:72px;background:#1d1d1f;padding:16px;box-shadow:0 50px 100px -40px rgba(0,0,0,.45);flex:none}
+.scr{width:100%;height:100%;border-radius:58px;background:#fff;overflow:hidden;padding:64px 30px 30px;font-size:22px;position:relative}
+.scr::before{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#1d1d1f}
+.scr .top{display:flex;align-items:center;gap:16px}
+.scr .av{width:72px;height:72px;border-radius:50%;background:url(assets/wave.webp) center/cover}
+.scr .nm{font-size:30px;font-weight:700}.scr .sub{color:var(--gray);font-size:20px}
+.scr .bal{margin-top:28px;background:var(--ink);color:#fff;border-radius:26px;padding:24px 26px}
+.scr .bal .k{font-size:18px;color:#a1a1a6}.scr .bal .n{font-size:52px;font-weight:700;letter-spacing:-.03em}
+.scr .row{display:flex;gap:14px;margin-top:24px}
+.scr .row .badge{width:110px;height:110px}.scr .row .badge b{font-size:44px}.scr .row .badge::before{inset:9px;border-width:2px}
+.scr .lock{opacity:.25;filter:grayscale(1)}
+.scr .li{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line);font-size:21px}
+.scr .pill{font-size:16px;font-weight:700;border-radius:99px;padding:5px 12px;background:var(--soft)}
+.scr .ok{background:#e3f4ee;color:var(--teal)}
+.scr h4{font-size:18px;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin-top:26px}
+.mock{font-size:20px;color:#a1a1a6;text-align:center;margin-top:16px}
+.courses{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:50px}
+.course{background:var(--soft);border-radius:30px;padding:30px 32px}
+.course h3{font-size:36px;letter-spacing:-.02em;margin-bottom:8px}
+.course p{font-size:26px;color:var(--gray);line-height:1.3}
+.course .t{margin-top:16px;font-size:22px;font-weight:600}
+
+/* backup table */
+table.tb{border-collapse:collapse;width:100%;margin-top:36px;font-size:28px}
+.tb th{font-size:24px;color:var(--gray);text-align:left;font-weight:600;padding:14px 18px;border-bottom:2px solid var(--ink)}
+.tb td{padding:13px 18px;border-bottom:1px solid var(--line)}
+.tb td.n{font-weight:700;font-variant-numeric:tabular-nums}
+.tb tr.hl td{background:#fff5df}
+
+/* video transitions (Flow clips): picture grows to full screen, plays, shrinks into the next slide */
+#tv{position:fixed;z-index:7;overflow:hidden;display:none;background:#fff;border-radius:40px;
+  transition:left .8s var(--ease),top .8s var(--ease),width .8s var(--ease),height .8s var(--ease),border-radius .8s var(--ease),opacity .45s ease}
+#tv video{width:100%;height:100%;object-fit:cover;display:block}
+
+/* logos */
+.lg{display:inline-flex;align-items:center;gap:12px;font-weight:600}
+.lg img{height:40px;width:auto;border-radius:8px}
+.pc .co{display:flex;align-items:center;gap:14px}.pc .co img{height:44px;width:44px;border-radius:12px}
+.pf img{height:26px;vertical-align:middle}
+.zju{height:46px;filter:brightness(0);opacity:.55}
+.rung .st{font-size:19px;font-weight:700;color:var(--coral);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+.rung .me{font-size:21px;color:var(--gray);margin-top:10px}
+/* posters */
+.posters{display:grid;grid-template-columns:repeat(3,440px);gap:56px;margin-top:46px;justify-content:center}
+.poster{height:640px;border-radius:30px;padding:34px 34px 30px;display:flex;flex-direction:column;box-shadow:0 34px 70px -34px rgba(0,0,0,.4);overflow:hidden}
+.poster .brand{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:700;letter-spacing:.02em}
+.poster .brand img{width:30px;height:30px;border-radius:7px}
+.poster .art{width:100%;height:280px;object-fit:cover;border-radius:18px;margin:18px 0 20px}
+.poster h3{font-size:50px;line-height:1;letter-spacing:-.035em}
+.poster p{font-size:22px;margin-top:12px;line-height:1.3;opacity:.82}
+.poster .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:600}
+.poster .foot img{height:30px}
+.qr{width:74px;height:74px;border-radius:10px;border:6px solid #fff;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 7 7' shape-rendering='crispEdges'%3E%3Cpath d='M0 0h3v3H0zM4 0h3v3H4zM0 4h3v3H0zM4 4h1v1H4zM6 4h1v1H6zM5 5h1v1H5zM4 6h1v1H4zM6 6h1v1H6z' fill='%231d1d1f'/%3E%3Cpath d='M1 1h1v1H1zM5 1h1v1H5zM1 5h1v1H1z' fill='%23fff'/%3E%3C/svg%3E") center/100% no-repeat}
+
+.fx-on .net img{opacity:0}
+/* notes */
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:40vh;overflow:auto;background:rgba(29,29,31,.94);color:#f5f5f7;
+  font-size:20px;line-height:1.5;padding:20px 32px;display:none;z-index:9}
+#notes.show{display:block}
+#notes b{color:#F2B33D}
+#count{position:fixed;right:18px;bottom:12px;font-size:14px;color:#c7c7cc;z-index:8}
+
+/* ===== THEME: Apple keynote, dark, liquid glass (see DESIGN.md) ===== */
+:root{
+  --bg:#000; --ink:#F5F5F7; --gray:#86868B; --line:rgba(255,255,255,.16);
+  --blue:#0A84FF; --cyan:#5AC8FA; --navy:#071a3a; --amber:#FF9F0A;
+  --glass:rgba(255,255,255,.07); --glass-hi:rgba(255,255,255,.16); --glass-lo:rgba(255,255,255,.03);
+  --soft:var(--glass); --coral:var(--blue); --teal:var(--cyan); --yellow:var(--amber);
+  color-scheme:dark;
+}
+html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,"Helvetica Neue",Arial,sans-serif}
+/* slides are transparent so the fx.js network canvas shows through; the navy gradient lives on the stage */
+#stage{background:radial-gradient(1100px 760px at 82% 0%,rgba(10,132,255,.22),transparent 65%),
+  radial-gradient(900px 700px at 0% 100%,rgba(90,200,250,.09),transparent 60%),
+  linear-gradient(160deg,#071a3a 0%,#030a18 55%,#000 100%)}
+.slide{background:none}
+.src,.mock,.pc .yr{color:#6e6e73}
+.coral{color:#4da3ff}.teal{color:var(--teal)}.yellow{color:var(--yellow)}
+.grad{background:linear-gradient(90deg,#0A84FF,#5AC8FA);-webkit-background-clip:text;background-clip:text;color:transparent}
+.kicker{color:var(--teal);text-transform:uppercase;letter-spacing:.14em;font-size:24px}
+.lead{color:#a1a1a6}
+.tile{background:#0b0b0d;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 90px -30px rgba(10,132,255,.35)}
+.card,.rung,.stat,.pc,.course{background:var(--glass);border:1px solid rgba(255,255,255,.14);border-radius:28px;backdrop-filter:blur(18px)}
+.stat.dark{background:linear-gradient(135deg,#0A84FF,#0a4fa8);color:#fff;border-color:transparent}.stat.dark .l{color:rgba(255,255,255,.8)}
+.rung .pf{background:rgba(255,255,255,.1)}
+.rule{background:var(--glass);border:1px solid rgba(255,255,255,.16);border-radius:20px}
+.bcol .cr{background:rgba(255,255,255,.1)}
+.gap{background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.35);border-radius:24px}
+.tb tr.hl td{background:rgba(10,132,255,.16)}
+.tb th{border-bottom-color:#fff}
+.track{background:rgba(255,255,255,.1)}
+.fx-on .net{filter:none}
+.zju{filter:brightness(0) invert(1);opacity:.7}
+.lg img,.pc .co img{background:#fff;padding:3px}
+.poster{box-shadow:0 0 0 1px rgba(255,255,255,.12),0 34px 70px -34px rgba(10,132,255,.4)}
+.phone{background:#2c2c2e;box-shadow:0 0 0 2px #3a3a3c,0 50px 100px -40px rgba(10,132,255,.45)}
+.scr{background:#0b0b0d;color:#f5f5f7}
+.scr::before{background:#000}
+.scr .bal{background:linear-gradient(135deg,#0A84FF,#0a4fa8)}
+.scr .ok{background:rgba(90,200,250,.18);color:var(--teal)}
+.scr .pill{background:rgba(255,255,255,.1)}
+#tv{background:#000;border-radius:28px}
+.hint{color:rgba(255,255,255,.35)}
+#notes{background:rgba(20,20,22,.96)}
+#count{font-size:15px;color:rgba(255,255,255,.45);letter-spacing:.06em}
+h1,h2{font-weight:650}
+h1{letter-spacing:-.035em}
+
+/* liquid glass */
+@property --mx{syntax:'<percentage>';inherits:true;initial-value:20%}
+.glass{position:relative;border-radius:36px;overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.08));
+  backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -18px 40px rgba(10,132,255,.10),0 40px 80px -30px rgba(0,0,0,.7)}
+.glass::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(600px 220px at var(--mx) -10%,rgba(255,255,255,.28),transparent 60%);
+  animation:mx 8s ease-in-out infinite alternate}
+.glass>*{position:relative}
+.glass.pill{border-radius:999px}.glass.round{border-radius:50%}
+@keyframes mx{from{--mx:0%}to{--mx:100%}}
+.slide.active .glass.r{animation-name:glassIn}
+@keyframes glassIn{from{opacity:0;transform:translateY(28px);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.glass::before{animation:none}.slide.active .r,.slide.active .zoom{animation:none}}
+.label{font-size:24px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:22px}
+.amber{color:var(--amber)}
+
+/* full-bleed photo with gradient fallback (image missing = gradient only) */
+.photo{position:absolute;inset:0;overflow:hidden;
+  background:radial-gradient(1100px 800px at 72% 40%,rgba(10,132,255,.35),transparent 70%),linear-gradient(160deg,#071a3a,#000 80%)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+img[data-a]:not([src]){visibility:hidden}
+.photo::after{content:"";position:absolute;inset:0;pointer-events:none}
+.slide>.photo~*:not(.src){position:relative}
+
+/* 1 title */
+#s-title .photo::after{background:linear-gradient(180deg,rgba(0,0,0,.72),rgba(0,0,0,.25) 38%,transparent 55%,rgba(0,0,0,.55) 100%),
+  linear-gradient(90deg,rgba(0,0,0,.45),transparent 45%)}
+#s-title h1{font-size:176px;font-weight:600;margin-top:150px;line-height:.92;letter-spacing:-.04em}
+#s-title .lead{font-size:40px;font-weight:400;color:rgba(255,255,255,.72);margin-top:30px;letter-spacing:-.005em}
+/* photo zoomed from its left edge: the scene moves right, the left side stays filled (the clip copies this) */
+#s-title .photo img{transform-origin:0 60%;transform:scale(1.18)}
+/* title: letters rise out of a blur one by one, then a soft light passes over "Bridge" */
+@property --sh{syntax:'<length>';inherits:true;initial-value:-600px}
+.slide.active .ttl.r{animation:none}
+.ttl .ch{display:inline-block;padding:.06em 0 .2em;margin:-.06em 0 -.2em} /* room for the "g" descender inside the clipped gradient */
+.slide.active .ttl .ch{animation:chIn 1.2s var(--ease) both;animation-delay:calc(.2s + var(--k) * 60ms)}
+@keyframes chIn{from{opacity:0;transform:translateY(.32em);filter:blur(16px)}to{opacity:1;transform:none;filter:none}}
+.ttl .grad{background:none;color:inherit}
+.ttl .grad .ch{color:transparent;-webkit-background-clip:text;background-clip:text;
+  background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.95) 50%,transparent 65%) calc(var(--off,0px) + var(--sh)) 0/420px 100% no-repeat,
+    linear-gradient(90deg,#0A84FF,#5AC8FA) var(--off,0px) 0/var(--ww,100%) 100% no-repeat;
+  -webkit-background-clip:text;background-clip:text}
+.slide.active .ttl .grad{animation:sheen 7s ease-in-out 1.4s infinite}
+@keyframes sheen{0%{--sh:-600px}35%,100%{--sh:1200px}}
+@media (prefers-reduced-motion:reduce){.slide.active .ttl .ch,.slide.active .ttl .grad{animation:none}}
+
+/* 7 academy: photo + glass medal cards across the full width */
+.acad .photo::after{background:linear-gradient(180deg,rgba(0,0,0,.72),rgba(0,0,0,.15) 42%,rgba(0,0,0,.6) 100%)}
+.acad .photo img{transform:scale(1.35) translateY(11%)} /* push the halos below the headline */
+.acad h2{font-size:96px}
+.acad h2 .sub{color:rgba(255,255,255,.55)}
+.acad .badges{position:absolute!important;left:140px;right:140px;bottom:110px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin:0}
+.acad .bcol{width:auto;display:grid;grid-template-columns:170px 1fr;grid-template-rows:auto 1fr auto;column-gap:30px;text-align:left;align-items:start;padding:34px 36px}
+.acad .badge{width:170px;height:170px;grid-row:1/3;align-self:center}
+.acad .badge.img{filter:drop-shadow(0 18px 28px rgba(0,0,0,.55))}
+.acad .badge.img b{display:block;font-size:64px;font-weight:600;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.acad .bcol h3{margin-top:4px;font-size:46px}
+.acad .bcol p{font-size:27px;color:rgba(255,255,255,.7);margin-top:8px}
+.acad .bcol .cr{grid-column:1/-1;justify-self:start;margin-top:24px;white-space:nowrap;font-size:23px;background:rgba(255,255,255,.12)}
+.acad .bcol.key{border-color:rgba(255,159,10,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -18px 40px rgba(255,159,10,.12),0 0 60px -10px rgba(255,159,10,.25),0 40px 80px -30px rgba(0,0,0,.7)}
+/* gold medal: slow glow + a shine passing over it */
+.acad .gd{overflow:hidden;animation:goldGlow 3.2s ease-in-out infinite}
+.acad .gd::after{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:40%;transform:skewX(-20deg);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:shine 4.5s ease-in-out infinite}
+@keyframes goldGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,159,10,0)) drop-shadow(0 18px 28px rgba(0,0,0,.55))}
+  50%{filter:drop-shadow(0 0 36px rgba(255,159,10,.65)) drop-shadow(0 18px 28px rgba(0,0,0,.55))}}
+@keyframes shine{0%,45%{left:-60%}85%,100%{left:120%}}
+@media (prefers-reduced-motion:reduce){.acad .gd,.acad .gd::after{animation:none}}
+
+/* ===== shared parts for the other slides ===== */
+.photo.dim img{opacity:.38}
+.photo.shade-l::after{background:linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.55) 40%,rgba(0,0,0,.05) 75%),linear-gradient(0deg,rgba(0,0,0,.55),transparent 35%)}
+.photo.shade-r::after{background:linear-gradient(270deg,rgba(0,0,0,.9),rgba(0,0,0,.55) 42%,rgba(0,0,0,.05) 70%)}
+.photo.shade-v::after{background:linear-gradient(180deg,rgba(0,0,0,.75),rgba(0,0,0,.2) 45%,rgba(0,0,0,.6))}
+.sub{color:rgba(255,255,255,.55)}
+.gl-lbl{font-size:22px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.glass.key{border-color:rgba(255,159,10,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -18px 40px rgba(255,159,10,.12),0 0 60px -10px rgba(255,159,10,.25),0 40px 80px -30px rgba(0,0,0,.7)}
+.big{font-weight:600}
+
+/* 3 reasons + 12 activities: three tall glass cards */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:80px;height:500px}
+.rs{padding:46px 46px 42px;display:flex;flex-direction:column}
+.rs h3{font-size:64px;font-weight:650;letter-spacing:-.03em;margin-top:18px}
+.rs p{font-size:34px;color:rgba(255,255,255,.7);margin-top:14px;line-height:1.3}
+.rs .fix{margin-top:auto;padding-top:28px;border-top:1px solid rgba(255,255,255,.16);font-size:36px;font-weight:600;line-height:1.25}
+
+/* 4 proof */
+.pc.glass{padding:38px 36px}
+.gap.glass{display:grid;border-radius:28px}
+
+/* 5 idea */
+/* hands sit in the lower half, text + glass share the dark band on top */
+.idea-photo{background:#0e0d0e}
+.idea-photo img{transform:translateY(14%)}
+.idea-photo::after{background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 45%)}
+.idea{display:grid;grid-template-columns:1fr 660px;gap:70px;align-items:end}
+.idea h2{font-size:80px}
+.ip{padding:4px 40px}
+.ip>div{padding:24px 0;border-top:1px solid rgba(255,255,255,.14)}
+.ip>div:first-child{border-top:none}
+.ip p{font-size:34px;margin-top:8px;line-height:1.25}
+
+/* 6 who */
+.who-s .big{font-size:200px}
+.who-s .lead{color:rgba(255,255,255,.8);margin-top:18px}
+.who3{position:absolute!important;left:140px;right:140px;bottom:120px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.ws{padding:32px 36px}
+.ws .l{font-size:28px;line-height:1.3;color:rgba(255,255,255,.75)}
+.ws .l b{color:#fff}
+.ws .ic{background:rgba(10,132,255,.28);border:1px solid rgba(90,200,250,.4)}
+
+/* 8 phone + courses */
+.phone.glass{border-radius:72px;padding:16px}
+.scr{background:rgba(4,10,22,.88)}
+.scr .av{background:linear-gradient(135deg,#0A84FF,#5AC8FA);display:grid;place-items:center}
+.scr .av::after{content:"M";font-size:32px;font-weight:600;color:#fff}
+.course.glass{padding:30px 32px;border-radius:30px}
+.course .t{color:var(--cyan)}
+
+/* 9 win-win */
+.wwp{margin-top:56px;padding:18px 52px 8px}
+.wwp .ww>div{font-size:38px;padding:34px 20px 34px 0}
+.wwp .ww .h{font-size:24px;padding-bottom:10px}
+.wwp .ww{margin-top:0}
+.wwp .ww>div:nth-child(-n+3){border-top:none}
+.rule.glass{margin-top:44px;padding:26px 48px;font-size:44px}
+
+/* 11 ladder */
+.rung.glass{padding:34px 30px;border-radius:32px}
+.rung .st{color:var(--cyan)}
+.rung .pf{background:#fff;color:#111}
+
+/* 13 posters */
+.poster.glass{color:#fff;border-radius:30px}
+.poster .art{background:linear-gradient(160deg,#0a3a7a,#000)}
+
+/* 14 test */
+.tst{width:980px}
+.tst-photo{background:#101011}
+.tst-photo img{transform:translateX(30%)} /* keep the chrome shape right of the text */
+.tst h2{font-size:64px}
+.hyp{display:grid;gap:22px;margin-top:44px}
+.hy{padding:30px 38px}
+.hy p{font-size:36px;margin-top:8px}
+.hy .tt{font-size:22px;color:rgba(255,255,255,.6)}
+.tst .note{margin-top:26px;font-size:24px;color:rgba(255,255,255,.6)}
+
+/* 15 limits */
+.lim{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:64px}
+.lm{padding:44px 44px 48px;min-height:380px}
+.lm p{font-size:40px;line-height:1.3;margin-top:20px}
+.disc{margin-top:28px;padding:28px 44px;font-size:26px;line-height:1.45;color:rgba(255,255,255,.75);border-radius:28px}
+.disc b{color:#fff}
+
+/* 16 end */
+.end-h{font-size:120px!important}
+.endp{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px;padding:30px 0}
+.endp>div{padding:0 38px;border-left:1px solid rgba(255,255,255,.14)}
+.endp>div:first-child{border-left:none}
+.endp p{font-size:32px;margin-top:10px;line-height:1.3}
+.thanks{position:absolute!important;right:140px;bottom:110px;font-size:48px!important;color:#fff!important}
+
+/* 17 backup */
+.tbw{margin-top:36px;padding:12px 40px 20px;border-radius:28px}
+.tbw .tb{margin-top:0}
+.t-foot{position:absolute!important;left:140px;bottom:100px;display:flex;align-items:center;gap:26px;padding:14px 32px 14px 22px;font-size:24px;color:rgba(255,255,255,.88)}
+.t-foot .lg{gap:11px}
+.t-foot .lg img{height:38px;border-radius:9px}
+.t-foot .sep{width:1px;height:30px;background:rgba(255,255,255,.25)}
+.t-foot .zju{height:44px}
+.t-foot .ab{font-weight:600;color:#fff;gap:8px}
+.t-foot .ab .ab-logo{height:52px;width:auto;margin:-8px 0;background:none;padding:0;border-radius:0;filter:drop-shadow(0 0 14px rgba(90,200,250,.35))}
+
+/* 2 problem: bento */
+#s-problem h2{font-size:96px}
+.bento{display:grid;grid-template-columns:600px 1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;height:610px;margin-top:56px}
+.bento .ptile{grid-row:span 2;width:auto;height:auto;border-radius:36px;border:1px solid rgba(255,255,255,.18);
+  background:radial-gradient(500px 400px at 60% 30%,rgba(10,132,255,.35),transparent 70%),linear-gradient(160deg,#071a3a,#000);box-shadow:0 40px 80px -30px rgba(0,0,0,.7)}
+.bento .ptile img{object-position:52% 30%}
+.cell{padding:38px 44px;display:flex;flex-direction:column;justify-content:flex-end}
+.cell .v{font-size:140px;font-weight:600;letter-spacing:-.05em;line-height:.9}
+.cell .l{font-size:30px;color:rgba(255,255,255,.7);margin-top:16px;line-height:1.25;min-height:2.5em} /* room for 2 lines so every number sits on the same line */
+.cell.key{border-color:rgba(255,159,10,.55);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -18px 40px rgba(255,159,10,.12),0 0 60px -10px rgba(255,159,10,.25),0 40px 80px -30px rgba(0,0,0,.7)}
+
+/* 8 data: canvas network left, glass panels right */
+.dstats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:34px;padding:26px 0}
+.dstats>div{padding:0 28px;border-left:1px solid rgba(255,255,255,.14)}
+.dstats>div:first-child{border-left:none}
+.dstats .v{font-size:52px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.dstats .l{font-size:22px;color:rgba(255,255,255,.65);margin-top:8px}
+.dfact{margin-top:22px;padding:26px 36px}
+.dfact .fact{margin:0;font-size:34px}
+.dfact .fact strong{font-size:56px;font-weight:600}
+.dbars{margin-top:22px;padding:26px 36px 18px}
+.dbars .bars-h{font-size:24px;color:rgba(255,255,255,.65)}
+.dbars .bar{grid-template-columns:220px 1fr 170px;margin:16px 0;font-size:30px}
+.dbars .track{height:44px;background:rgba(255,255,255,.08);border-radius:14px}
+.dbars .fill{border-radius:14px}
+/* in-place video (slide 1 -> 2): the photo comes alive, the text lifts away, the last frame lands in the next picture */
+.photo video.alive{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s var(--ease)}
+.photo video.alive.on{opacity:1}
+.photo::after{transition:opacity 1.2s var(--ease)}
+.tv-leaving .photo::after{opacity:.35}
+.slide.active.tv-leaving .r{animation:liftOut .75s var(--ease) both!important}
+.slide.active.tv-leaving .t-foot{animation:sinkOut .75s var(--ease) both!important}
+.slide.active.tv-leaving h1.r{animation-delay:.06s!important}
+.slide.active.tv-leaving .lead.r{animation-delay:.12s!important}
+@keyframes liftOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateY(-34px);filter:blur(12px)}}
+@keyframes sinkOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateY(44px);filter:blur(10px)}}
+.slide.tv-land .ptile{animation:none!important}
+.tv-leaving .src{opacity:0;transition:opacity .5s var(--ease)}
+#tv{transition:left .95s var(--ease),top .95s var(--ease),width .95s var(--ease),height .95s var(--ease),border-radius .95s var(--ease),opacity .5s ease}
+/* ===== round of fixes (labels, icons, alignment, medals, app, table) ===== */
+.label{font-size:32px;margin-bottom:24px;letter-spacing:.13em}
+.rs-ic{position:absolute!important;top:40px;right:40px;width:76px;height:76px;border-radius:22px;display:grid;place-items:center;
+  background:rgba(10,132,255,.18);border:1px solid rgba(90,200,250,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.rs-ic svg,.who-ic svg{width:38px;height:38px;stroke:#cfeeff;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rs.key .rs-ic{background:rgba(255,159,10,.14);border-color:rgba(255,159,10,.45)}
+.rs.key .rs-ic svg{stroke:#ffd08a}
+.pc h3{min-height:2.2em}
+.grad.live{display:inline-block;background-image:linear-gradient(90deg,#0A84FF,#5AC8FA 30%,#bfe8ff 50%,#5AC8FA 70%,#0A84FF);background-size:300% 100%}
+.slide.active .grad.live{animation:flow 9s ease-in-out 1.2s infinite,wordIn 1.2s var(--ease) .25s both}
+@keyframes flow{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+@keyframes wordIn{from{opacity:0;transform:translateY(.25em);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+.ws{padding:40px 44px;min-height:230px}
+.ws .l{font-size:33px}
+.ws .ic{width:66px;height:66px;border-radius:20px;margin-bottom:26px}
+.ws .ic svg{width:34px;height:34px}
+/* 7: medals on the light rings, cards centered under them */
+.acad .photo img{transform:scale(1.35) translateY(15%)}
+.acad .medals{position:absolute!important;left:0;right:0;top:var(--medal-y,420px);display:grid;grid-template-columns:repeat(3,390px);column-gap:21px;justify-content:center;justify-items:center}
+.acad .medals .badge{width:170px;height:170px;grid-row:auto;filter:drop-shadow(0 0 30px rgba(90,200,250,.35)) drop-shadow(0 18px 24px rgba(0,0,0,.6))}
+.acad .badge b{position:absolute;left:49%;top:47%;transform:translate(-50%,-50%);font-size:62px;font-weight:600;line-height:1}
+.acad .badges{left:0;right:0;grid-template-columns:repeat(3,390px);column-gap:21px;justify-content:center}
+.acad .bcol{display:flex;flex-direction:column;align-items:center;text-align:center;padding:32px 30px 34px}
+.acad .bcol h3{margin-top:0;font-size:46px}
+.acad .bcol p{margin-top:8px}
+.acad .bcol .cr{margin-top:auto;padding-top:0}
+.acad .bcol p{margin-bottom:20px}
+/* 8: app header + tab bar, all badges in color */
+.scr .li{padding:11px 0}
+.scr h4{margin-top:18px}
+.scr .bal{margin-top:20px;padding:18px 24px}
+.scr .row{margin-top:16px}
+.scr .row .badge{width:100px;height:100px}
+.scr{padding-top:58px}
+.scr .app-bar{display:flex;align-items:center;gap:10px;font-size:22px;margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.scr .app-logo{width:34px;height:34px;border-radius:9px;background:#fff;padding:3px;object-fit:contain}
+.scr .tabs{position:absolute;left:18px;right:18px;bottom:18px;display:flex;justify-content:space-around;padding:14px 8px;border-radius:24px;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);font-size:17px;color:rgba(255,255,255,.5)}
+.scr .tabs .on{color:var(--cyan);font-weight:600}
+/* 9: icons in the who column, bigger table */
+.wwp .ww{grid-template-columns:400px 1fr 1fr}
+.wwp .ww>div{font-size:40px}
+.wwp .ww .h{font-size:28px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.wwp .ww .who{display:flex;align-items:center;gap:20px}
+.who-ic{flex:none;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:rgba(10,132,255,.18);border:1px solid rgba(90,200,250,.35)}
+.who-ic img{width:40px;height:40px;border-radius:9px;background:#fff;padding:3px}
+/* glass icons (images): the box becomes the icon */
+.rs-ic{width:100px;height:100px;border-radius:26px}
+.rs h3{margin-top:72px} /* title sits under the icon, never beside it */
+.ws .ic{width:88px;height:88px;border-radius:24px}
+.who-ic{width:78px;height:78px;border-radius:22px}
+.rs-ic,.ws .ic,.who-ic{overflow:hidden;padding:0}
+.rs-ic img.ico,.ws .ic img.ico,.who-ic img.ico{width:100%;height:100%;object-fit:cover;display:block;border-radius:0;background:none;padding:0}
+/* 5 idea, centered: headline over the spark, one box above each hand, light lines into the spark */
+.idea-c{text-align:center}
+.idea-c h2{font-size:78px}
+.ip-card{position:absolute!important;top:430px;width:470px;padding:38px 36px 36px;text-align:center;display:flex;flex-direction:column;justify-content:flex-start}
+.ip-card p{min-height:2.6em} /* both boxes: logo rows and text start on the same lines */
+.ip-hd{display:flex;align-items:center;justify-content:center;gap:14px;font-size:40px;font-weight:650;letter-spacing:-.02em}
+.ip-hd img{height:52px;width:auto}
+.ip-hd .qw{border-radius:12px;background:#fff;padding:4px}
+.ip-hd .ab{height:60px;margin:-4px 0;filter:drop-shadow(0 0 12px rgba(90,200,250,.4))}
+.idea-c .label .x{margin:0 6px;opacity:.7}
+.idea-c .label .ab-mini{height:44px;width:auto;margin:-8px 0;background:none;padding:0}
+.ip-card.left{left:140px}
+.ip-card.right{right:140px}
+.ip-card p{font-size:31px;margin-top:14px;line-height:1.3;color:rgba(255,255,255,.8)}
+.idea-lines{position:absolute!important;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible}
+.idea-lines path{fill:none;stroke-width:2;stroke-linecap:round}
+.idea-lines .flow{stroke:#e8f8ff;stroke-width:2.5;stroke-dasharray:40 420;animation:flowIn 3.2s cubic-bezier(.45,0,.25,1) infinite;filter:drop-shadow(0 0 6px #5AC8FA)}
+.idea-lines circle{fill:#5AC8FA;filter:drop-shadow(0 0 8px #5AC8FA)}
+@keyframes flowIn{from{stroke-dashoffset:460}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.idea-lines .flow{animation:none;opacity:0}}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 TITLE -->
+<section class="slide" id="s-title" data-scene="title">
+  <div class="photo"><img data-a="h1-title" alt=""></div>
+  <div>
+    <h1 class="r ttl" aria-label="AI Bridge"><span class="w">AI</span> <span class="w grad">Bridge</span></h1>
+    <p class="lead r">Helping international students<br>in China use AI well.</p>
+  </div>
+  <div class="t-foot glass pill r">
+    <span class="lg ab"><img class="ab-logo" src="assets/new/ai-bridge-logo.png" alt="">AI Bridge</span>
+    <span class="sep"></span>
+    <span class="lg"><img src="assets/logos/qwen-mark.png" alt="">Qwen</span>
+    <span class="lg"><img src="assets/logos/alibaba-cloud-mark.png" alt="" style="height:30px">Alibaba Cloud</span>
+    <span class="sep"></span>
+    <img class="zju" src="assets/logos/zju-logo.png" alt="Zhejiang University"><span>Can Pamukcu · Social Media Marketing</span>
+  </div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide" id="s-problem">
+  <div class="label r">The problem</div>
+  <h2 class="r">Students use AI. <span class="grad">But not well.</span></h2>
+  <div class="bento">
+    <div class="tile ptile zoom"><img data-a="h2-problem" alt=""></div>
+    <div class="glass cell r"><div class="v grad" data-count>86%</div><div class="l">use AI in their studies</div></div>
+    <div class="glass cell r"><div class="v" data-count>54%</div><div class="l">use it every week</div></div>
+    <div class="glass cell key r"><div class="v amber" data-count>58%</div><div class="l">lack AI knowledge and skills</div></div>
+    <div class="glass cell r"><div class="v" data-count>48%</div><div class="l">don't feel ready for an AI workplace</div></div>
+  </div>
+  <div class="src">Digital Education Council, Global AI Student Survey 2024 · 3,839 students, 16 countries</div>
+</section>
+
+<!-- 3 THREE REASONS -->
+<section class="slide">
+  <div class="photo dim shade-v"><img data-a="s1-network" alt=""></div>
+  <div class="label r">Why?</div>
+  <h2 class="r" style="font-size:96px">Three reasons.</h2>
+  <div class="tri">
+    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-skill.png" alt=""></div><div class="gl-lbl">01</div><h3>No skill</h3><p>Nobody shows how.</p><div class="fix">Fix: short courses.</div></div>
+    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-credits.png" alt=""></div><div class="gl-lbl">02</div><h3>No easy start</h3><p>Tools cost money.</p><div class="fix">Fix: free credits.</div></div>
+    <div class="glass rs key r"><div class="rs-ic"><img class="ico" src="assets/new/icon-circles.png" alt=""></div><div class="gl-lbl">03</div><h3>Small circles</h3><p>We stay in our own group.</p><div class="fix amber">Fix: start with bridges.</div></div>
+  </div>
+</section>
+
+<!-- 3b PROOF -->
+<section class="slide">
+  <div class="label r">Proof it works</div>
+  <h2 class="r" style="font-size:96px">Every AI company <span class="grad live">wants students.</span></h2>
+  <div class="proof">
+    <div class="pc glass r"><div class="co"><img src="assets/logos/gh-google-gemini.png" alt="">Google</div><h3>Gemini for students</h3><div class="v" data-count>1 year</div><div class="l">of AI free, in 140+ countries</div><div class="yr">2025–2026</div></div>
+    <div class="pc glass r"><div class="co"><img src="assets/logos/gh-openai.png" alt="">OpenAI</div><h3>ChatGPT Edu</h3><div class="v" data-count>120,000</div><div class="l">students at Indiana University</div><div class="yr">2025</div></div>
+    <div class="pc glass r"><div class="co"><img src="assets/logos/gh-anthropics.png" alt="">Anthropic</div><h3>Claude for Education</h3><div class="v">Learning</div><div class="l">mode: asks questions, doesn't just answer</div><div class="yr">2025</div></div>
+    <div class="pc glass r"><div class="co"><img src="assets/logos/gh-github.png" alt="">GitHub</div><h3>Student Developer Pack</h3><div class="v" data-count>1.5M+</div><div class="l">students got free tools</div><div class="yr">since 2014</div></div>
+  </div>
+  <div class="gap glass key r"><img src="assets/qwen-mark.png" alt=""><p><b>Qwen today:</b> free tokens for developers. <span class="sub">But I found no student academy for it.</span> <b class="amber">That's the gap.</b></p></div>
+  <div class="src">Google/Gemini student offers (news reports, 2025–26) · TechCrunch, Apr 2025 · GitHub Blog · Alibaba Cloud Model Studio docs · logos belong to their owners, no endorsement implied</div>
+</section>
+
+<!-- 4 IDEA -->
+<section class="slide" id="s-idea">
+  <div class="photo idea-photo"><img data-a="h3-idea" alt=""></div>
+  <div class="idea-c">
+    <div class="label r lg"><img src="assets/logos/qwen-mark.png" alt="">Qwen <span class="x">×</span> <img class="ab-mini" src="assets/new/ai-bridge-logo.png" alt="">AI Bridge</div>
+    <h2 class="r">Qwen brings the tool.<br><span class="grad">We bring the students.</span></h2>
+  </div>
+  <!-- light lines from each box to the spark where the two fingers meet -->
+  <svg class="idea-lines r" viewBox="0 0 1920 1080" aria-hidden="true">
+    <defs>
+      <linearGradient id="ilL" gradientUnits="userSpaceOnUse" x1="610" y1="0" x2="950" y2="0"><stop offset="0" stop-color="#5AC8FA" stop-opacity=".15"/><stop offset="1" stop-color="#9fe2ff" stop-opacity=".95"/></linearGradient>
+      <linearGradient id="ilR" gradientUnits="userSpaceOnUse" x1="1310" y1="0" x2="975" y2="0"><stop offset="0" stop-color="#5AC8FA" stop-opacity=".15"/><stop offset="1" stop-color="#9fe2ff" stop-opacity=".95"/></linearGradient>
+    </defs>
+    <path class="base" d="M610 545 C 760 545, 870 630, 948 672" stroke="url(#ilL)"/>
+    <path class="base" d="M1310 545 C 1160 545, 1050 630, 978 672" stroke="url(#ilR)"/>
+    <path class="flow" d="M610 545 C 760 545, 870 630, 948 672"/>
+    <path class="flow" d="M1310 545 C 1160 545, 1050 630, 978 672"/>
+    <circle cx="610" cy="545" r="5"/><circle cx="1310" cy="545" r="5"/>
+  </svg>
+  <div class="glass ip-card left r"><div class="ip-hd"><img class="qw" src="assets/logos/qwen-mark.png" alt="">Qwen</div><p>Free credits and the AI model</p></div>
+  <div class="glass ip-card right r"><div class="ip-hd"><img class="ab" src="assets/new/ai-bridge-logo.png" alt="">AI Bridge</div><p>Courses, community, the right first students</p></div>
+</section>
+
+<!-- 5 WHO -->
+<section class="slide who-s">
+  <div class="photo shade-l"><img data-a="h4-who" alt=""></div>
+  <div class="label r">Who</div>
+  <div class="big r" data-count>380,000</div>
+  <p class="lead r">international students in China (2024–25)</p>
+  <div class="who3">
+    <div class="glass ws r"><div class="ic"><img class="ico" src="assets/new/icon-lock.png" alt=""></div><div class="l"><b>66%</b> of students use ChatGPT most. Hard to reach in China.</div></div>
+    <div class="glass ws r"><div class="ic"><img class="ico" src="assets/new/icon-groups.png" alt=""></div><div class="l"><b>Small circles:</b> classes split into country groups.</div></div>
+    <div class="glass ws r"><div class="ic"><img class="ico" src="assets/new/icon-start.png" alt=""></div><div class="l"><b>Start:</b> one pilot group at my university.</div></div>
+  </div>
+  <div class="src">Ministry of Education of the PRC, via China Daily</div>
+</section>
+
+<!-- 6 QWEN ACADEMY -->
+<section class="slide acad">
+  <div class="photo"><img data-a="h5-academy" alt=""></div>
+  <div>
+    <div class="label r lg"><img src="assets/logos/qwen-mark.png" alt="">The offer</div>
+    <h2 class="r">Qwen Academy.<br><span class="sub">Learn. Earn a badge. Get credits.</span></h2>
+  </div>
+  <div class="medals">
+    <div class="badge bz" id="bz"><b>1</b></div><div class="badge sv" id="sv"><b>2</b></div><div class="badge gd" id="gd"><b>3</b></div>
+  </div>
+  <div class="badges">
+    <div class="bcol glass r"><h3>Starter</h3><p>Finish one short course</p><span class="cr">+ credits</span></div>
+    <div class="bcol glass r"><h3>Builder</h3><p>Build a project with your group</p><span class="cr">++ more credits</span></div>
+    <div class="bcol glass key r"><h3>Bridge</h3><p>Help friends from other groups earn a badge</p><span class="cr">+++ most credits + certificate</span></div>
+  </div>
+</section>
+
+<!-- 6b ACADEMY DETAIL -->
+<section class="slide">
+  <div style="display:grid;grid-template-columns:460px 1fr;gap:120px;align-items:center;height:100%">
+    <div class="zoom">
+      <div class="phone glass"><div class="scr">
+        <div class="app-bar"><img class="app-logo" data-a="qwen-academy-logo" src="assets/logos/qwen-mark.png" alt=""><b>Qwen Academy</b></div>
+        <div class="top"><div class="av"></div><div><div class="nm">Mei</div><div class="sub">Business · Indonesia</div></div></div>
+        <div class="bal"><div class="k">QWEN CREDITS</div><div class="n" data-count>1,250</div></div>
+        <h4>My badges</h4>
+        <div class="row"><div class="badge bz" id="bz"><b>1</b></div><div class="badge sv" id="sv"><b>2</b></div><div class="badge gd" id="gd"><b>3</b></div></div>
+        <h4>Friends I helped</h4>
+        <div class="li">Arjun · Design <span class="pill ok">Starter ✓</span></div>
+        <div class="li">Lucía · Thesis <span class="pill ok">Starter ✓</span></div>
+        <div class="li">Tomás · Research <span class="pill">2 / 3 tasks</span></div>
+        <div class="li" style="border:none;color:var(--amber);font-weight:600">1 more friend → Bridge badge</div>
+        <div class="tabs"><span class="on">Home</span><span>Courses</span><span>Badges</span><span>Friends</span></div>
+      </div></div>
+      <div class="mock">Concept mockup</div>
+    </div>
+    <div>
+      <div class="label r">Inside Qwen Academy</div>
+      <h2 class="r" style="font-size:76px">4 starter courses.<br><span class="sub">10 minutes. 1 real task.</span></h2>
+      <div class="courses">
+        <div class="course glass r"><h3>Business</h3><p>Clean a messy sales sheet with Qwen.</p><div class="t">Task: a clear chart</div></div>
+        <div class="course glass r"><h3>Design</h3><p>Turn a mood board into sketches.</p><div class="t">Task: 3 concepts</div></div>
+        <div class="course glass r"><h3>Research</h3><p>Find and check papers. Catch AI mistakes.</p><div class="t">Task: 5 checked sources</div></div>
+        <div class="course glass r"><h3>Thesis</h3><p>Make your slides clearer.</p><div class="t">Task: before and after</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 WIN-WIN -->
+<section class="slide">
+  <div class="label r">Why help each other?</div>
+  <h2 class="r" style="font-size:96px">Everyone <span class="grad">wins.</span></h2>
+  <div class="glass wwp r"><div class="ww">
+    <div class="h">Who</div><div class="h">Gives</div><div class="h">Gets</div>
+    <div class="who"><span class="who-ic"><img class="ico" src="assets/new/icon-newstudent.png" alt=""></span>New student</div><div>Joins with a friend's invite</div><div class="get">Bonus credits + a friend to ask</div>
+    <div class="who"><span class="who-ic"><img class="ico" src="assets/new/icon-helper.png" alt=""></span>Helper</div><div>Helps a friend from another group</div><div class="get">Credits + Bridge badge + certificate</div>
+    <div class="who"><span class="who-ic"><img src="assets/logos/qwen-mark.png" alt=""></span>Qwen</div><div>Free credits</div><div class="get">New users, future engineers</div>
+  </div></div>
+  <div class="rule glass pill key r">Help a friend earn a badge. <span class="amber">You both get credits.</span></div>
+</section>
+
+<!-- 8 DATA -->
+<section class="slide" data-scene="data">
+  <div class="data">
+    <div class="net zoom"><img src="assets/network.svg" alt="Caltech student friendship network" style="width:100%"></div>
+    <div>
+      <div class="label r">The data ·<br>468 real students, 8 houses</div>
+      <h2 class="r" style="font-size:76px">Who should learn<br><span class="grad">Qwen first?</span></h2>
+      <div class="glass dstats r">
+        <div><div class="v" data-count>468</div><div class="l">students</div></div>
+        <div><div class="v" data-count>9,733</div><div class="l">friendships</div></div>
+        <div><div class="v" data-count>8</div><div class="l">houses (groups)</div></div>
+        <div><div class="v" data-count>37</div><div class="l">friends each (median)</div></div>
+      </div>
+      <div class="step glass dfact">
+        <p class="fact"><strong>1 in 2</strong> friendships cross houses.<br><span style="color:rgba(255,255,255,.6)">If people mixed freely: 87%.</span></p>
+      </div>
+      <div class="step glass dbars">
+        <p class="bars-h">Other houses reached (of 7) · people reached in brackets</p>
+        <div class="bar"><span>Random starters</span><div class="track"><div class="fill" style="--w:60%;background:rgba(255,255,255,.38)"></div></div><span class="v">4.2 <small style="font-size:24px;color:var(--gray)">(49)</small></span></div>
+        <div class="bar"><span><b>Bridge</b> starters<br><small style="font-size:20px;color:var(--gray)">high betweenness</small></span><div class="track"><div class="fill" style="--w:86%;background:linear-gradient(90deg,#c46f00,var(--amber));box-shadow:0 0 24px rgba(255,159,10,.45)"></div></div><span class="v amber">6.0 <small style="font-size:24px;color:var(--gray)">(72)</small></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="src">Caltech Facebook network, 2005 (Traud, Mucha &amp; Porter, 2012) · stand-in data · 5 starters per house, 300 runs, 2% chance per friend · bridges = high betweenness centrality (ρ = 0.87)</div>
+</section>
+
+<!-- 9 LADDER -->
+<section class="slide">
+  <div class="photo dim shade-v"><img data-a="s2-ladder" alt=""></div>
+  <div class="label r">The ladder</div>
+  <h2 class="r" style="font-size:96px">Five small steps.</h2>
+  <div class="ladder">
+    <div class="rung glass r" style="min-height:400px"><div class="n">1</div><div class="st">Awareness</div><h3>See</h3><p>1-minute Qwen lesson</p><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span><div class="me">Reach · views</div></div>
+    <div class="rung glass r" style="min-height:450px"><div class="n">2</div><div class="st">Engagement</div><h3>Join</h3><p>Our student group</p><span class="pf" style="padding:0;background:none"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:38px;border-radius:8px"></span><div class="me">Engagement rate</div></div>
+    <div class="rung glass r" style="min-height:500px"><div class="n">3</div><div class="st">Conversion</div><h3>Learn</h3><p>First course</p><div class="me">Sign-ups · Starter badges</div><div class="badge bz mini" id="bz"><b>1</b></div></div>
+    <div class="rung glass r" style="min-height:550px"><div class="n">4</div><div class="st">Retention</div><h3>Build</h3><p>Group project</p><span class="pf"><img src="assets/logos/gh-github.png" alt="" style="height:24px;border-radius:50%"> GitHub</span><div class="me">Active after 4 weeks</div><div class="badge sv mini" id="sv"><b>2</b></div></div>
+    <div class="rung glass key r" style="min-height:600px"><div class="n">5</div><div class="st amber">Advocacy</div><h3>Share</h3><p>Help a friend from another group</p><div class="me">Referrals · Bridge badges</div><div class="badge gd mini" id="gd"><b>3</b></div></div>
+  </div>
+  <div class="src">Douyin = social publishing zone · WeChat, GitHub = social community zone · owned + earned media, no paid ads</div>
+</section>
+
+<!-- 10 ACTIVITIES -->
+<section class="slide">
+  <div class="label r">What we do</div>
+  <h2 class="r" style="font-size:96px">Three activities.</h2>
+  <div class="tri">
+    <div class="glass rs key r"><div class="gl-lbl">01</div><h3>Bridge Seeds</h3><p>First 8–10 students are bridges.</p><div class="fix amber">Why: they reach more groups.</div></div>
+    <div class="glass rs r"><div class="gl-lbl">02</div><h3>Qwen Lessons</h3><p>4 short videos, 1 task each.</p><div class="fix">Why: 58% lack skills.</div></div>
+    <div class="glass rs r"><div class="gl-lbl">03</div><h3>Build Together</h3><p>Mixed groups of 3, Demo Day.</p><div class="fix">Why: friends learn together.</div></div>
+  </div>
+</section>
+
+<!-- 10b POSTERS -->
+<section class="slide" id="s-posters">
+  <div class="label r">Posters · one per activity</div>
+  <h2 class="r" style="font-size:76px">What students will see.</h2>
+  <div class="posters">
+    <div class="poster glass r">
+      <div class="brand"><img src="assets/logos/qwen-mark.png" alt="" style="background:#fff;padding:3px">QWEN ACADEMY</div>
+      <img class="art" data-a="s1-network" alt="">
+      <h3>Be a Bridge Seed.</h3><p>Friends in other groups? Get the first Qwen credits and a short training.</p>
+      <div class="foot"><span class="lg" style="gap:8px"><img src="assets/logos/wechat-logo.png" alt="" style="height:30px;border-radius:6px"></span><span class="qr"></span></div>
+    </div>
+    <div class="poster glass r">
+      <div class="brand"><img src="assets/logos/qwen-mark.png" alt="" style="background:#fff;padding:3px">QWEN ACADEMY</div>
+      <img class="art" data-a="s2-ladder" alt="">
+      <h3>AI in 10 minutes.</h3><p>4 short Qwen lessons. 1 real task each. Earn your Starter badge.</p>
+      <div class="foot"><span style="background:#fff;border-radius:10px;padding:6px 10px"><img src="assets/logos/douyin-logo.svg" alt="Douyin" style="height:26px"></span><span class="qr"></span></div>
+    </div>
+    <div class="poster glass r">
+      <div class="brand"><img src="assets/logos/qwen-mark.png" alt="" style="background:#fff;padding:3px">QWEN ACADEMY</div>
+      <img class="art" data-a="h4-who" alt="">
+      <h3>Demo Day.</h3><p>Build with 2 friends from other countries. Show it in 3 minutes.</p>
+      <div class="foot"><span>Week 4 · on GitHub</span><span class="qr"></span></div>
+    </div>
+  </div>
+  <div class="src">Poster concepts · QR codes are placeholders</div>
+</section>
+
+<!-- 11 TEST -->
+<section class="slide" id="s-test">
+  <div class="photo shade-l tst-photo"><img data-a="s3-chrome" alt=""></div>
+  <div class="tst">
+    <div class="label r">Evaluation model · pilot of 100–200 students</div>
+    <h2 class="r">Network metrics → <span class="grad">results.</span></h2>
+    <div class="hyp">
+      <div class="glass hy r"><div class="gl-lbl">H1 · Betweenness centrality</div><p>→ more sign-ups from other groups</p><span class="tt">Test: negative binomial regression</span></div>
+      <div class="glass hy r"><div class="gl-lbl">H2 · Degree centrality</div><p>→ more invited friends earn badges</p><span class="tt">Test: Poisson regression</span></div>
+      <div class="glass hy r"><div class="gl-lbl">H3 · Spans structural holes</div><p>→ more Bridge badges, active after 4 weeks</p><span class="tt">Test: logistic regression</span></div>
+    </div>
+    <p class="note r">Network data: invite links + "Who do you ask for AI help?" · measured in NodeXL</p>
+  </div>
+</section>
+
+<!-- 12 LIMITS + AI -->
+<section class="slide" id="s-limits">
+  <div class="photo dim shade-v"><img data-a="s3-chrome" alt=""></div>
+  <div class="label r">Honest limits</div>
+  <h2 class="r" style="font-size:96px">What is weak.</h2>
+  <div class="lim">
+    <div class="glass lm r"><div class="gl-lbl">01</div><p>Stand-in data: <span class="sub">Caltech 2005, not China</span></p></div>
+    <div class="glass lm r"><div class="gl-lbl">02</div><p>Not tested yet, <span class="sub">credits not agreed</span></p></div>
+    <div class="glass lm r"><div class="gl-lbl">03</div><p>AI helped <span class="sub">find data, run the analysis.</span><br>AI can't <span class="sub">pick real bridge students.</span></p></div>
+  </div>
+  <div class="glass disc r"><b>AI disclosure:</b> Claude (Anthropic) helped with data search, analysis code and slide design. Images: Yuanbao. Videos: Google Flow. I checked every number.</div>
+</section>
+
+<!-- 13 END: conclusion + thank you -->
+<section class="slide" id="s-end" data-scene="faint">
+  <div class="photo shade-v"><img data-a="h6-ending" alt=""></div>
+  <div class="label r">Conclusion</div>
+  <h2 class="r end-h">Learn AI by <span class="grad">building.</span></h2>
+  <div class="glass endp r">
+    <div><div class="gl-lbl">Problem</div><p>Students use AI, but not well.</p></div>
+    <div><div class="gl-lbl">Solution</div><p>Qwen Academy, badges, win-win credits.</p></div>
+    <div><div class="gl-lbl">Proof</div><p>Bridges reach 6 of 7 groups, random 4.</p></div>
+  </div>
+  <p class="lead r thanks">Thank you. Questions?</p>
+</section>
+
+<!-- BACKUP: full results -->
+<section class="slide">
+  <div class="kicker r">Backup · full results</div>
+  <h2 class="r" style="font-size:72px">Same game, 3 settings.</h2>
+  <div class="glass tbw r"><table class="tb">
+    <tr><th>Chance per friend</th><th>Starters</th><th>People reached in other houses</th><th>Other houses reached (of 7)</th></tr>
+    <tr><td rowspan="3">1%</td><td>Random</td><td class="n">3.2</td><td class="n">0.3</td></tr>
+    <tr><td>Most popular</td><td class="n">7.7</td><td class="n">1.0</td></tr>
+    <tr class="hl"><td>Bridges</td><td class="n">7.9</td><td class="n">1.0</td></tr>
+    <tr><td rowspan="3"><b>2% (on slide)</b></td><td>Random</td><td class="n">49.1</td><td class="n">4.2</td></tr>
+    <tr><td>Most popular</td><td class="n">71.4</td><td class="n">6.0</td></tr>
+    <tr class="hl"><td>Bridges</td><td class="n">71.9</td><td class="n">6.0</td></tr>
+    <tr><td rowspan="3">3%</td><td>Random</td><td class="n">187.8</td><td class="n">6.7</td></tr>
+    <tr><td>Most popular</td><td class="n">198.7</td><td class="n">7.0</td></tr>
+    <tr class="hl"><td>Bridges</td><td class="n">197.8</td><td class="n">7.0</td></tr>
+  </table></div>
+  <div class="src">5 starters from one house · 300 runs × 8 houses per row · a house counts as reached when 3+ people learned · code: data_caltech/analysis.py</div>
+</section>
+
+</div>
+<div id="tv"><video muted playsinline preload="auto"></video></div><div id="notes"></div><div id="count"></div>
+<script src="assets/net.js"></script>
+<script src="assets/fx.js?v=3"></script>
+<script>
+const stage=document.getElementById('stage'),slides=[...document.querySelectorAll('.slide')];
+// title letters: split for the entrance; the "Bridge" letters share one gradient (offset per letter) and the passing sheen
+document.querySelectorAll('.ttl .w').forEach(w=>{w.innerHTML=[...w.textContent].map(c=>`<span class="ch">${c}</span>`).join('')});
+document.querySelectorAll('.ttl .ch').forEach((c,k)=>c.style.setProperty('--k',k));
+function ttlOffsets(){document.querySelectorAll('.ttl .grad').forEach(w=>{w.style.setProperty('--ww',w.offsetWidth+'px');
+  w.querySelectorAll('.ch').forEach(c=>c.style.setProperty('--off',(w.offsetLeft-c.offsetLeft)+'px'))})}
+const notes=document.getElementById('notes'),count=document.getElementById('count');
+let i=0,vt=null;
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
+addEventListener('resize',fit);fit();
+function render(n){
+  slides.forEach((s,k)=>{s.classList.toggle('active',k===n);s.classList.remove('tv-leaving','tv-land')});
+  const s=slides[n];
+  if(s.id==='s-title')ttlOffsets();
+  notes.innerHTML=`<b>${n+1}/${slides.length-1}</b> &nbsp; `+(s.dataset.notes||'');
+  count.textContent=n<slides.length-1?`${n+1} / ${slides.length-1}`:'Backup';
+  document.querySelectorAll('video').forEach(v=>{if(!s.contains(v))v.pause()});
+  s.querySelectorAll('video').forEach(v=>{if(v===tvVid)return;v.currentTime=0;if(v.id==='introVid')v.pause();else v.play().catch(()=>{})});
+  location.hash=n;
+  if(window.FX)FX.enter(s,n+1,slides.length-1,s.querySelectorAll('.step.on').length);
+  if(typeof syncState==='function')syncState();
+}
+const names=sl=>new Set([...sl.querySelectorAll('[style*="view-transition-name"],#bz,#sv,#gd')].map(e=>getComputedStyle(e).viewTransitionName).filter(x=>x&&x!=='none'));
+function zoomTarget(sl){
+  const t=sl.querySelector('[data-zoom]')||sl.querySelector('.tile,.net,.phone,.cards,.proof,.ladder,.ww,.badges');
+  const r=(t||stage).getBoundingClientRect();
+  return [r.left+r.width/2,r.top+r.height/2];
+}
+function go(n,back){
+  if(n<0||n>=slides.length||n===i)return;
+  const from=slides[i];i=n;
+  const shared=[...names(from)].some(x=>names(slides[n]).has(x));
+  const de=document.documentElement;
+  de.dataset.vt=shared?'morph':(back?'back':'fwd');
+  const [x,y]=zoomTarget(from);de.style.setProperty('--ox',x+'px');de.style.setProperty('--oy',y+'px');
+  // set the steps now, not in the (async) transition callback, so a fast second press is not lost
+  slides[n].querySelectorAll('.step').forEach(e=>e.classList.toggle('on',!!back));
+  const upd=()=>{render(n);if(back&&window.FX)FX.step(slides[n],slides[n].querySelectorAll('.step.on').length)};
+  if(document.startViewTransition&&!document.hidden){
+    if(vt)vt.skipTransition();
+    vt=document.startViewTransition(upd);
+    vt.ready.catch(()=>{});vt.updateCallbackDone.catch(()=>{});vt.finished.catch(()=>{}).then(()=>{vt=null});
+  }else upd();
+}
+// Flow transition clips: from slide -> to the next slide. a/b = picture it starts from / lands on.
+// inplace: the clip starts where its picture is (never full window), the text leaves, then the last frame lands on the next slide's picture
+const TV=[{from:'s-title',name:'t1-title-problem',a:'h1-title',b:'h2-problem',inplace:true},
+          {from:'s-problem',name:'t2-problem-reasons',a:'h2-problem',b:'s1-network',inplace:true},
+          {from:'s-idea',name:'t3-idea-who',a:'h3-idea',b:'h4-who',inplace:true,drift:true},
+          {from:'s-posters',name:'t4-posters-test',a:'s2-ladder',b:'s3-chrome',inplace:true},
+          {from:'s-limits',name:'t5-limits-end',a:'s3-chrome',b:'h6-ending',inplace:true}];
+const tvBox=document.getElementById('tv'),tvVid=tvBox.querySelector('video');let tvOn=null;
+const pick=(sl,a)=>sl.querySelector(a.startsWith('#')?a:`[data-a="${a}"]`);
+const place=r=>Object.assign(tvBox.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});
+let tvA=null,tvGrow=null;
+const stageK=()=>stage.getBoundingClientRect().width/1920;
+// an element's transform with its translate scaled by k (stage px -> screen px for the fixed overlay box)
+const tfo=el=>{const o=getComputedStyle(el).transformOrigin.split(' ').map(parseFloat);return`${o[0]/el.offsetWidth*100}% ${o[1]/el.offsetHeight*100}%`};
+const tfm=(el,k)=>{const m=getComputedStyle(el).transform;if(!m||m==='none')return'none';const v=m.match(/-?[\d.e]+/g).map(Number);if(v.length!==6)return m;v[4]*=k;v[5]*=k;return`matrix(${v.join(',')})`};
+function playTV(t){
+  const el=pick(slides[i],t.a);if(!el)return false;
+  tvOn=t;tvA=el;tvVid.src=t.src;tvVid.currentTime=0;
+  if(t.inplace){
+    slides[i].classList.add('tv-leaving');tvVid.onended=endTV;
+    const ph=el.closest('.photo');
+    if(ph){ // full-slide photo: the clip plays inside it, under the text, so the photo comes alive
+      tvVid.classList.add('alive');tvVid.style.transformOrigin=tfo(el);tvVid.style.transform=tfm(el,1);ph.appendChild(tvVid);
+      tvVid.addEventListener('playing',()=>{tvVid.classList.add('on');
+        // let the start position settle first, then drift slowly back to the next slide's framing
+        if(t.drift){void getComputedStyle(tvVid).transform;setTimeout(()=>{if(tvOn!==t)return;
+          tvVid.style.transition=`opacity .6s, transform ${Math.max(1,(tvVid.duration||8)-1.5)}s cubic-bezier(.45,0,.25,1)`;tvVid.style.transform='none'},60)}},{once:true});
+    }else{ // a picture box: the clip fades in on the box, then the box opens up to the whole slide
+      tvBox.style.transition='none';place(el.getBoundingClientRect());
+      Object.assign(tvBox.style,{display:'block',opacity:0,borderRadius:getComputedStyle(el.closest('.tile')||el).borderRadius});
+      tvVid.style.objectPosition=getComputedStyle(el).objectPosition;
+      tvBox.offsetWidth;tvBox.style.transition='';
+      tvVid.addEventListener('playing',()=>{if(tvOn!==t)return;tvBox.style.opacity=1;
+        tvGrow=setTimeout(()=>{place(stage.getBoundingClientRect());tvBox.style.borderRadius='0px'},700)},{once:true});
+    }
+    tvVid.play().catch(()=>{});return true;
+  }
+  tvBox.style.transition='none';place(el.getBoundingClientRect());Object.assign(tvBox.style,{display:'block',opacity:1,borderRadius:'40px'});
+  tvBox.offsetWidth;tvBox.style.transition='';
+  place({left:0,top:0,width:innerWidth,height:innerHeight});tvBox.style.borderRadius='0px';
+  setTimeout(()=>tvVid.play().catch(()=>{}),350);
+  tvVid.onended=endTV;return true;
+}
+function endTV(){
+  if(!tvOn)return;const t=tvOn;tvOn=null;tvVid.onended=null;
+  if(t.inplace&&!tvVid.ended&&tvVid.duration){ // a click skips: jump to the last frame, then land
+    tvVid.pause();tvVid.addEventListener('seeked',()=>landTV(t),{once:true});tvVid.currentTime=tvVid.duration-.05;return}
+  tvVid.pause();
+  if(t.inplace)return landTV(t);
+  i=slides.indexOf(document.getElementById(t.from))+1;document.documentElement.dataset.vt='morph';
+  slides[i].querySelectorAll('.step').forEach(e=>e.classList.remove('on'));render(i);
+  const el=pick(slides[i],t.b);
+  if(el){place(el.getBoundingClientRect());tvBox.style.borderRadius=getComputedStyle(el.closest('.tile,.card')||el).borderRadius||'40px'}
+  setTimeout(()=>{tvBox.style.opacity=0},650);setTimeout(()=>{tvBox.style.display='none'},1150);
+}
+// the clip (on its last frame) moves into the overlay box and lands on the next slide's picture:
+// a picture box -> it shrinks into it; a full-slide photo -> it fades into it while the text rises
+function landTV(t){
+  clearTimeout(tvGrow);tvVid.pause();const k=stageK();
+  if(tvVid.parentNode!==tvBox){
+    tvBox.style.transition='none';place(stage.getBoundingClientRect());Object.assign(tvBox.style,{display:'block',opacity:1,borderRadius:'0px'});
+    tvBox.appendChild(tvVid);tvVid.classList.remove('alive','on');tvVid.style.transition='none';tvVid.style.transformOrigin=tfo(tvA);tvVid.style.transform=t.drift?'none':tfm(tvA,k);
+    tvBox.offsetWidth;tvBox.style.transition='';
+  }
+  i=slides.indexOf(document.getElementById(t.from))+1;
+  slides[i].querySelectorAll('.step').forEach(e=>e.classList.remove('on'));render(i);slides[i].classList.add('tv-land');
+  const el=pick(slides[i],t.b),full=!!(el&&el.closest('.photo'));
+  if(el){
+    tvVid.style.objectPosition=getComputedStyle(el).objectPosition;
+    tvVid.style.transition='transform .95s var(--ease)';const tt=tfm(el,k);if(tt!=='none')tvVid.style.transformOrigin=tfo(el);tvVid.style.transform=tt;
+    place(el.getBoundingClientRect());tvBox.style.borderRadius=full?'0px':getComputedStyle(el.closest('.tile,.card')||el).borderRadius;
+  }
+  setTimeout(()=>{tvBox.style.opacity=0},full?200:950);
+  setTimeout(()=>{tvBox.style.display='none';Object.assign(tvVid.style,{objectPosition:'',transform:'',transformOrigin:'',transition:''})},full?800:1450);
+}
+TV.forEach(t=>tryAsset(t.name,['mp4'],src=>t.src=src));
+function next(){
+  if(tvOn)return endTV();
+  const t=TV.find(t=>t.from===slides[i].id&&t.src);
+  if(t&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
+function prev(){if(tvOn)return endTV();const on=[...slides[i].querySelectorAll('.step.on')];if(on.length){on.at(-1).classList.remove('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i-1,true)}
+function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src=`assets/new/${name}.${exts[k]}`;
+  if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
+  else{const im=new Image();im.onload=()=>ok(src);im.onerror=()=>go1(k+1);im.src=src}};go1(0)}
+const IMG=['webp','png','jpg','jpeg'];
+document.querySelectorAll('img[data-a]').forEach(el=>tryAsset(el.dataset.a,IMG,src=>el.src=src));
+document.querySelectorAll('video[data-a]').forEach(el=>tryAsset(el.dataset.a,['mp4'],src=>{el.src=src;if(el.closest('.slide.active')&&el.id!=='introVid')el.play().catch(()=>{})}));
+[['bz','m1-bronze'],['sv','m2-silver'],['gd','m3-gold']].forEach(([c,n])=>tryAsset(n,IMG,src=>document.querySelectorAll('.badge.'+c).forEach(b=>{b.classList.add('img');b.style.background=`url(${src})`})));
+tryAsset('s08-avatar',IMG,src=>document.querySelectorAll('.scr .av').forEach(a=>a.style.backgroundImage=`url(${src})`));
+// ---- presenter view + phone remote (only when opened through server.py) ----
+const PREVIEW=location.search.includes('preview');
+const LIVE=false; // shared copy: no phone remote
+const slideTitle=sl=>{const h=sl&&sl.querySelector('h1,h2');return h?h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Video'};
+function syncState(){
+  if(!LIVE)return;
+  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length-1,notes:slides[i].dataset.notes||'',
+    title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
+}
+if(LIVE){
+  let since=null;setInterval(syncState,2000);
+  (async function poll(){
+    try{const r=await (await fetch('/api/cmd?since='+(since??0),{cache:'no-store'})).json();
+      if(since===null)since=r.id;else for(const c of r.cmds){since=Math.max(since,c.id);
+        if(c.cmd==='next')next();else if(c.cmd==='prev')prev();else if(c.cmd==='goto')go(c.n)}}catch(e){}
+    setTimeout(poll,250);
+  })();
+}
+if(PREVIEW){
+  count.style.display='none';
+  addEventListener('hashchange',()=>{const n=+location.hash.slice(1)||0;i=n;render(n);slides[n].querySelectorAll('.step').forEach(e=>e.classList.add('on'));if(window.FX)FX.step(slides[n],9)});
+}
+addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='n'||e.key==='N')notes.classList.toggle('show');
+  else if(e.key==='f'||e.key==='F')document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+});
+addEventListener('click',e=>{if(!notes.contains(e.target))next()});
+i=Math.min(+location.hash.slice(1)||0,slides.length-1);render(i);
+// preview (presenter view, exports): open with every step shown
+if(PREVIEW){slides[i].querySelectorAll('.step').forEach(e=>e.classList.add('on'));if(window.FX)FX.step(slides[i],9)}
+</script>
+</body>
+</html>
