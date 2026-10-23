@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/new/ai-bridge-logo.png">
 <title>AI Bridge</title>
 <style>
 :root{
@@ -917,7 +918,9 @@ function zoomTarget(sl){
   return [r.left+r.width/2,r.top+r.height/2];
 }
 function go(n,back){
-  if(n<0||n>=slides.length||n===i)return;
+  if(n<0||n>=slides.length)return;
+  if(tvOn)abortTV();
+  if(n===i)return;
   const from=slides[i];i=n;
   const shared=[...names(from)].some(x=>names(slides[n]).has(x));
   const de=document.documentElement;
@@ -967,18 +970,18 @@ function playTV(t){
       tvVid.addEventListener('playing',()=>{if(tvOn!==t)return;tvBox.style.opacity=1;
         tvGrow=setTimeout(()=>{place(stage.getBoundingClientRect());tvBox.style.borderRadius='0px'},700)},{once:true});
     }
-    tvVid.play().catch(()=>{});return true;
+    tvVid.play().catch(()=>setTimeout(()=>{if(tvOn===t)endTV()},300));tvWatch();return true;
   }
   tvBox.style.transition='none';place(el.getBoundingClientRect());Object.assign(tvBox.style,{display:'block',opacity:1,borderRadius:'40px'});
   tvBox.offsetWidth;tvBox.style.transition='';
   place({left:0,top:0,width:innerWidth,height:innerHeight});tvBox.style.borderRadius='0px';
-  setTimeout(()=>tvVid.play().catch(()=>{}),350);
+  setTimeout(()=>tvVid.play().catch(()=>{if(tvOn===t)endTV()}),350);tvWatch();
   tvVid.onended=endTV;return true;
 }
 function endTV(){
   if(!tvOn)return;const t=tvOn;tvOn=null;tvVid.onended=null;
   if(t.inplace&&!tvVid.ended&&tvVid.duration){ // a click skips: jump to the last frame, then land
-    tvVid.pause();tvVid.addEventListener('seeked',()=>landTV(t),{once:true});tvVid.currentTime=tvVid.duration-.05;return}
+    tvVid.pause();let done=false;const fin=()=>{if(done)return;done=true;landTV(t)};tvVid.addEventListener('seeked',fin,{once:true});setTimeout(fin,800);tvVid.currentTime=tvVid.duration-.05;return}
   tvVid.pause();
   if(t.inplace)return landTV(t);
   i=slides.indexOf(document.getElementById(t.from))+1;document.documentElement.dataset.vt='morph';
@@ -1007,14 +1010,29 @@ function landTV(t){
   setTimeout(()=>{tvBox.style.opacity=0},full?200:950);
   setTimeout(()=>{tvBox.style.display='none';Object.assign(tvVid.style,{objectPosition:'',transform:'',transformOrigin:'',transition:''})},full?800:1450);
 }
+// Safety net for clips: if the browser stops the video (window covered or minimized, paused, stuck loading, play blocked)
+// the clip is skipped, so the deck can never freeze on a transition. Matters most with the phone remote (no click on the laptop).
+let tvWd=null,tvLast=-1,tvStall=0,tvStarted=false;
+function tvWatch(){clearInterval(tvWd);tvLast=-1;tvStall=0;tvStarted=false;
+  tvVid.addEventListener('playing',()=>{tvStarted=true},{once:true});
+  tvWd=setInterval(()=>{if(!tvOn){clearInterval(tvWd);return}
+    const t=tvVid.currentTime;
+    if(document.hidden||(tvVid.paused&&!tvVid.ended)||t===tvLast)tvStall+=.4;else tvStall=0;
+    tvLast=t;
+    if(tvStall>=(document.hidden?.4:tvStarted?1.6:7))endTV()},400)}
+// a phone/keyboard jump while a clip runs: stop the clip cleanly and show the slide
+function abortTV(){clearTimeout(tvGrow);clearInterval(tvWd);tvOn=null;tvVid.onended=null;tvVid.pause();
+  tvBox.style.display='none';tvBox.style.opacity=0;if(tvVid.parentNode!==tvBox)tvBox.appendChild(tvVid);
+  tvVid.classList.remove('alive','on');Object.assign(tvVid.style,{objectPosition:'',transform:'',transformOrigin:'',transition:''});
+  slides.forEach(s=>s.classList.remove('tv-leaving','tv-land'))}
 TV.forEach(t=>{t.src=`assets/new/${t.name}.mp4`});
 // once the page has loaded, pull the clips into memory so they start instantly and can seek (no network wait mid-transition)
 addEventListener('load',()=>setTimeout(async()=>{for(const t of TV){try{const r=await fetch(t.src);if(r.ok)t.src=URL.createObjectURL(await r.blob())}catch(e){}}},800));
 function next(){
   if(tvOn)return endTV();
   const t=TV.find(t=>t.from===slides[i].id&&t.src);
-  if(t&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
-function prev(){if(tvOn)return endTV();const on=[...slides[i].querySelectorAll('.step.on')];if(on.length){on.at(-1).classList.remove('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i-1,true)}
+  if(t&&!document.hidden&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
+function prev(){if(tvOn)return abortTV();const on=[...slides[i].querySelectorAll('.step.on')];if(on.length){on.at(-1).classList.remove('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i-1,true)}
 function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src=`assets/new/${name}.${exts[k]}`;
   if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
   else{const im=new Image();im.onload=()=>ok(src);im.onerror=()=>go1(k+1);im.src=src}};go1(0)}
@@ -1032,7 +1050,7 @@ function syncState(){
     title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
 }
 if(PREVIEW||!location.protocol.startsWith('http'))document.getElementById('bPhone').style.display='none';
-if(!PREVIEW&&location.protocol.startsWith('http'))fetch('/api/info',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(info=>{if(!info||!info.ips)return;LIVE=true;startLive()}).catch(()=>{});
+if(!PREVIEW&&location.protocol.startsWith('http')&&!/github\.io$/.test(location.hostname))fetch('/api/info',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(info=>{if(!info||!info.ips)return;LIVE=true;startLive()}).catch(()=>{});
 function startLive(){
   let since=null;setInterval(syncState,2000);syncState();
   (async function poll(){
