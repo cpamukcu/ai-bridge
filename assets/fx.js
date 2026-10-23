@@ -42,7 +42,7 @@
   let k = 1;
   function size() {
     const s = Math.min(innerWidth / 1920, innerHeight / 1080);
-    k = Math.min(2, (devicePixelRatio || 1) * s);
+    k = Math.min(1, (devicePixelRatio || 1) * s);
     cv.width = Math.round(1920 * k); cv.height = Math.round(1080 * k);
   }
   addEventListener('resize', size); size();
@@ -85,9 +85,12 @@
     });
     ctx.globalAlpha = 1;
   }
+  let last = 0;
   function loop(t) {
-    for (const key in T) { const d = T[key] - P[key]; P[key] = Math.abs(d) < 1e-3 ? T[key] : P[key] + d * (reduce ? 1 : .07); }
-    draw(t); requestAnimationFrame(loop);
+    requestAnimationFrame(loop);
+    if (t - last < 33) return; last = t;   // 30 fps is plenty for a slow drifting network
+    for (const key in T) { const d = T[key] - P[key]; P[key] = Math.abs(d) < 1e-3 ? T[key] : P[key] + d * (reduce ? 1 : .12); }
+    draw(t);
   }
   requestAnimationFrame(loop);
 

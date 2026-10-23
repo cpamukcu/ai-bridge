@@ -66,10 +66,10 @@ html[data-vt=fwd]::view-transition-old(root){transform-origin:var(--ox) var(--oy
 html[data-vt=fwd]::view-transition-new(root){transform-origin:var(--ox) var(--oy);animation:.95s var(--ease) .12s both zArrive}
 html[data-vt=back]::view-transition-old(root){animation:.7s cubic-bezier(.55,0,.35,1) both zShrink}
 html[data-vt=back]::view-transition-new(root){animation:.9s var(--ease) .08s both zDrop}
-@keyframes zDive{to{transform:scale(2.6);opacity:0;filter:blur(8px)}}
+@keyframes zDive{to{transform:scale(2.6);opacity:0}}
 @keyframes zArrive{from{transform:scale(.8);opacity:0}}
 @keyframes zShrink{to{transform:scale(.78);opacity:0}}
-@keyframes zDrop{from{transform:scale(1.5);opacity:0;filter:blur(8px)}}
+@keyframes zDrop{from{transform:scale(1.5);opacity:0}}
 .badge.img{background-size:cover!important;background-position:center!important;box-shadow:none}
 .badge.img::before,.badge.img b{display:none}
 ::view-transition-group(*){animation-duration:.9s;animation-timing-function:var(--ease)}
@@ -243,7 +243,7 @@ html,body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,"H
 .kicker{color:var(--teal);text-transform:uppercase;letter-spacing:.14em;font-size:24px}
 .lead{color:#a1a1a6}
 .tile{background:#0b0b0d;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 90px -30px rgba(10,132,255,.35)}
-.card,.rung,.stat,.pc,.course{background:var(--glass);border:1px solid rgba(255,255,255,.14);border-radius:28px;backdrop-filter:blur(18px)}
+.card,.rung,.stat,.pc,.course{background:var(--glass);border:1px solid rgba(255,255,255,.14);border-radius:28px}
 .stat.dark{background:linear-gradient(135deg,#0A84FF,#0a4fa8);color:#fff;border-color:transparent}.stat.dark .l{color:rgba(255,255,255,.8)}
 .rung .pf{background:rgba(255,255,255,.1)}
 .rule{background:var(--glass);border:1px solid rgba(255,255,255,.16);border-radius:20px}
@@ -273,17 +273,17 @@ h1{letter-spacing:-.035em}
 @property --mx{syntax:'<percentage>';inherits:true;initial-value:20%}
 .glass{position:relative;border-radius:36px;overflow:hidden;
   background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 45%,rgba(255,255,255,.08));
-  backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);-webkit-backdrop-filter:blur(28px) saturate(1.8) brightness(1.08);
+  backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
   border:1px solid rgba(255,255,255,.22);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -18px 40px rgba(10,132,255,.10),0 40px 80px -30px rgba(0,0,0,.7)}
 .glass::before{content:"";position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(600px 220px at var(--mx) -10%,rgba(255,255,255,.28),transparent 60%);
-  animation:mx 8s ease-in-out infinite alternate}
+  --mx:30%}
 .glass>*{position:relative}
 .glass.pill{border-radius:999px}.glass.round{border-radius:50%}
 @keyframes mx{from{--mx:0%}to{--mx:100%}}
 .slide.active .glass.r{animation-name:glassIn}
-@keyframes glassIn{from{opacity:0;transform:translateY(28px);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+@keyframes glassIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.glass::before{animation:none}.slide.active .r,.slide.active .zoom{animation:none}}
 .label{font-size:24px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:22px}
 .amber{color:var(--amber)}
@@ -308,7 +308,7 @@ img[data-a]:not([src]){visibility:hidden}
 .slide.active .ttl.r{animation:none}
 .ttl .ch{display:inline-block;padding:.06em 0 .2em;margin:-.06em 0 -.2em} /* room for the "g" descender inside the clipped gradient */
 .slide.active .ttl .ch{animation:chIn 1.2s var(--ease) both;animation-delay:calc(.2s + var(--k) * 60ms)}
-@keyframes chIn{from{opacity:0;transform:translateY(.32em);filter:blur(16px)}to{opacity:1;transform:none;filter:none}}
+@keyframes chIn{from{opacity:0;transform:translateY(.32em)}to{opacity:1;transform:none}}
 .ttl .grad{background:none;color:inherit}
 .ttl .grad .ch{color:transparent;-webkit-background-clip:text;background-clip:text;
   background:linear-gradient(100deg,transparent 35%,rgba(255,255,255,.95) 50%,transparent 65%) calc(var(--off,0px) + var(--sh)) 0/420px 100% no-repeat,
@@ -482,8 +482,8 @@ img[data-a]:not([src]){visibility:hidden}
 .slide.active.tv-leaving .t-foot{animation:sinkOut .75s var(--ease) both!important}
 .slide.active.tv-leaving h1.r{animation-delay:.06s!important}
 .slide.active.tv-leaving .lead.r{animation-delay:.12s!important}
-@keyframes liftOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateY(-34px);filter:blur(12px)}}
-@keyframes sinkOut{from{opacity:1;transform:none;filter:none}to{opacity:0;transform:translateY(44px);filter:blur(10px)}}
+@keyframes liftOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-34px)}}
+@keyframes sinkOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(44px)}}
 .slide.tv-land .ptile{animation:none!important}
 .tv-leaving .src{opacity:0;transition:opacity .5s var(--ease)}
 #tv{transition:left .95s var(--ease),top .95s var(--ease),width .95s var(--ease),height .95s var(--ease),border-radius .95s var(--ease),opacity .5s ease}
@@ -498,7 +498,7 @@ img[data-a]:not([src]){visibility:hidden}
 .grad.live{display:inline-block;background-image:linear-gradient(90deg,#0A84FF,#5AC8FA 30%,#bfe8ff 50%,#5AC8FA 70%,#0A84FF);background-size:300% 100%}
 .slide.active .grad.live{animation:flow 9s ease-in-out 1.2s infinite,wordIn 1.2s var(--ease) .25s both}
 @keyframes flow{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
-@keyframes wordIn{from{opacity:0;transform:translateY(.25em);filter:blur(12px)}to{opacity:1;transform:none;filter:none}}
+@keyframes wordIn{from{opacity:0;transform:translateY(.25em)}to{opacity:1;transform:none}}
 .ws{padding:40px 44px;min-height:230px}
 .ws .l{font-size:33px}
 .ws .ic{width:66px;height:66px;border-radius:20px;margin-bottom:26px}
@@ -681,7 +681,7 @@ img[data-a]:not([src]){visibility:hidden}
   <div style="display:grid;grid-template-columns:460px 1fr;gap:120px;align-items:center;height:100%">
     <div class="zoom">
       <div class="phone glass"><div class="scr">
-        <div class="app-bar"><img class="app-logo" data-a="qwen-academy-logo" src="assets/logos/qwen-mark.png" alt=""><b>Qwen Academy</b></div>
+        <div class="app-bar"><img class="app-logo" src="assets/logos/qwen-mark.png" alt=""><b>Qwen Academy</b></div>
         <div class="top"><div class="av"></div><div><div class="nm">Mei</div><div class="sub">Business · Indonesia</div></div></div>
         <div class="bal"><div class="k">QWEN CREDITS</div><div class="n" data-count>1,250</div></div>
         <h4>My badges</h4>
@@ -863,7 +863,7 @@ img[data-a]:not([src]){visibility:hidden}
 </div>
 <div id="tv"><video muted playsinline preload="auto"></video></div><div id="notes"></div><div id="count"></div>
 <script src="assets/net.js"></script>
-<script src="assets/fx.js?v=3"></script>
+<script src="assets/fx.js?v=4"></script>
 <script>
 const stage=document.getElementById('stage'),slides=[...document.querySelectorAll('.slide')];
 // title letters: split for the entrance; the "Bridge" letters share one gradient (offset per letter) and the passing sheen
@@ -984,7 +984,9 @@ function landTV(t){
   setTimeout(()=>{tvBox.style.opacity=0},full?200:950);
   setTimeout(()=>{tvBox.style.display='none';Object.assign(tvVid.style,{objectPosition:'',transform:'',transformOrigin:'',transition:''})},full?800:1450);
 }
-TV.forEach(t=>tryAsset(t.name,['mp4'],src=>t.src=src));
+TV.forEach(t=>{t.src=`assets/new/${t.name}.mp4`});
+// once the page has loaded, pull the clips into memory so they start instantly (no network wait mid-transition)
+addEventListener('load',()=>setTimeout(async()=>{for(const t of TV){try{const r=await fetch(t.src);if(r.ok)t.src=URL.createObjectURL(await r.blob())}catch(e){}}},800));
 function next(){
   if(tvOn)return endTV();
   const t=TV.find(t=>t.from===slides[i].id&&t.src);
@@ -994,10 +996,9 @@ function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src
   if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
   else{const im=new Image();im.onload=()=>ok(src);im.onerror=()=>go1(k+1);im.src=src}};go1(0)}
 const IMG=['webp','png','jpg','jpeg'];
-document.querySelectorAll('img[data-a]').forEach(el=>tryAsset(el.dataset.a,IMG,src=>el.src=src));
+document.querySelectorAll('img[data-a]').forEach(el=>{el.decoding='async';el.src=`assets/new/${el.dataset.a}.webp`});
 document.querySelectorAll('video[data-a]').forEach(el=>tryAsset(el.dataset.a,['mp4'],src=>{el.src=src;if(el.closest('.slide.active')&&el.id!=='introVid')el.play().catch(()=>{})}));
-[['bz','m1-bronze'],['sv','m2-silver'],['gd','m3-gold']].forEach(([c,n])=>tryAsset(n,IMG,src=>document.querySelectorAll('.badge.'+c).forEach(b=>{b.classList.add('img');b.style.background=`url(${src})`})));
-tryAsset('s08-avatar',IMG,src=>document.querySelectorAll('.scr .av').forEach(a=>a.style.backgroundImage=`url(${src})`));
+[['bz','m1-bronze'],['sv','m2-silver'],['gd','m3-gold']].forEach(([c,n])=>tryAsset(n,['webp'],src=>document.querySelectorAll('.badge.'+c).forEach(b=>{b.classList.add('img');b.style.background=`url(${src})`})));
 // ---- presenter view + phone remote (only when opened through server.py) ----
 const PREVIEW=location.search.includes('preview');
 const LIVE=false; // shared copy: no phone remote
