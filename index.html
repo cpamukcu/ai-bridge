@@ -968,7 +968,7 @@ function go(n,back){
   const [x,y]=zoomTarget(from);de.style.setProperty('--ox',x+'px');de.style.setProperty('--oy',y+'px');
   // set the steps now, not in the (async) transition callback, so a fast second press is not lost
   slides[n].querySelectorAll('.step').forEach(e=>e.classList.toggle('on',!!back));
-  const upd=()=>{render(n);if(back&&window.FX)FX.step(slides[n],slides[n].querySelectorAll('.step.on').length)};
+  const upd=()=>{if(n!==i)return;render(n);if(back&&window.FX)FX.step(slides[n],slides[n].querySelectorAll('.step.on').length)};
   if(document.startViewTransition&&!document.hidden){
     if(vt)vt.skipTransition();
     vt=document.startViewTransition(upd);
@@ -1130,6 +1130,7 @@ function mqttStart(){
   window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now()});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
   setInterval(()=>window.mqttPublish(),10000);
 }
+addEventListener('load',()=>setTimeout(()=>{if(!LIVE&&!PREVIEW)mqttStart()},1500));
 async function togglePhone(){
   ov.hidden=!ov.hidden;if(ov.hidden)return;
   let url,msg;
@@ -1140,7 +1141,7 @@ async function togglePhone(){
       else if(!r.ips||!r.ips.length)msg='No network yet: join your phone hotspot, then reload.'}catch(e){}
   }else{
     mqttStart();window.mqttPublish&&window.mqttPublish();
-    url=new URL('remote.html',location.href).href.split('#')[0]+'#'+mqRoom;msg='Laptop and phone both need internet. Code '+mqRoom;
+    url=new URL('remote.html',location.href).href.split('#')[0]+'#'+mqRoom;msg='Laptop and phone both need internet. Code '+mqRoom+' · build 26 Oct 19:01';
   }
   try{const qr=qrcode(0,'M');qr.addData(url);qr.make();ov.querySelector('.pqr').innerHTML=qr.createSvgTag(6,2)}catch(e){}
   ov.querySelector('.purl').textContent=url;ov.querySelector('.pstat').textContent=msg;
