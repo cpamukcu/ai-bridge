@@ -66,7 +66,7 @@ footer button:active{transform:scale(.97);opacity:.85}
     if(NET){var m=JSON.stringify({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:cmd==='goto'?'go':cmd,n:n});mqC.forEach(function(c){c.connected&&c.publish('ai-bridge-deck/v1/'+ROOM+'/cmd',m)})}
     else fetch('/api/cmd',{method:'POST',body:JSON.stringify({cmd:cmd,n:n})}).catch(function(){});
     try{navigator.vibrate&&navigator.vibrate(14)}catch(e){}
-    startTimer()}
+  }
   $('nextBtn').onclick=function(){send('next')};
   $('prevBtn').onclick=function(){send('prev')};
   $('aplus').onclick=function(){setNf(nf+2)};$('aminus').onclick=function(){setNf(nf-2)};
@@ -75,10 +75,10 @@ footer button:active{transform:scale(.97);opacity:.85}
   var sx=null;document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
   document.addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>90)send(dx<0?'next':'prev');sx=null});
 
-  // timer: tap the time to reset it to 00:00; it starts again by itself on the next Back/Next; amber at 9:00, red after 10:00
+  // timer: tap the time to start it; tap again while it runs to reset to 00:00; amber at 9:00, red after 10:00
   var t0=0,acc=0,running=false;
   function startTimer(){if(!running){running=true;t0=Date.now();$('timer').classList.add('run')}}
-  $('timer').onclick=function(){acc=0;running=false;t0=0;$('timer').classList.remove('run','warn','over');$('timer').textContent='00:00';try{navigator.vibrate&&navigator.vibrate(20)}catch(e){}};
+  $('timer').onclick=function(){if(running){acc=0;running=false;t0=0;$('timer').classList.remove('run','warn','over');$('timer').textContent='00:00'}else startTimer();try{navigator.vibrate&&navigator.vibrate(20)}catch(e){}};
   setInterval(function(){var s=Math.floor((acc+(running?Date.now()-t0:0))/1000),el=$('timer');el.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
     el.classList.toggle('over',s>600);el.classList.toggle('warn',s>540&&s<=600)},500);
 
