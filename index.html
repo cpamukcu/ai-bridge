@@ -655,6 +655,13 @@ img[data-a]:not([src]){visibility:hidden}
 .ladder .rf .me{min-height:0}
 .tst-photo img{transition:transform .7s var(--ease)}
 .tv-leaving .tst-photo img{transform:none}
+/* notes as bullets */
+#notes .nmeta{font-size:.62em;font-weight:700;letter-spacing:.06em;color:#5AC8FA;margin-bottom:8px}
+#notes .nb{margin:0;padding-left:1.1em}
+#notes .nb li{margin:0 0 .45em;padding-left:.2em}
+#notes .nb li::marker{color:#5AC8FA}
+#notes .nb li.nclick{list-style:none;margin:.5em 0 .6em -1.1em;padding:0}
+#notes .nb li.nclick::before{content:"CLICK";display:inline-block;padding:.12em .7em;border-radius:99px;background:#FF9F0A;color:#000;font-size:.6em;font-weight:800;letter-spacing:.05em}
 </style>
 </head>
 <body>
@@ -939,11 +946,19 @@ const notes=document.getElementById('notes'),count=document.getElementById('coun
 let i=0,vt=null;
 function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${s})`}
 addEventListener('resize',fit);fit();
+// speaker notes as bullets: one bullet per sentence, [CLICK] cues as their own amber line
+function bulletNotes(h){
+  let meta='',body=h||'';const m=body.match(/^\s*<b>([^<]*)<\/b>\s*(?:<br\s*\/?>)?/);
+  if(m){meta=m[1];body=body.slice(m[0].length)}
+  body=body.replace(/<b>(\[CLICK[^\]]*\])<\/b>/g,'\u0001').replace(/<[^>]+>/g,'');
+  const li=t=>t.split(/(?<=[.?!])\s+/).map(x=>x.trim()).filter(Boolean).map(x=>'<li>'+x.replace(/&/g,'&amp;')+'</li>').join('');
+  const out=body.split('\u0001').map(li).join('<li class="nclick"></li>');
+  return (meta?'<div class="nmeta">'+meta+'</div>':'')+'<ul class="nb">'+out+'</ul>'}
 function render(n){
   slides.forEach((s,k)=>{s.classList.toggle('active',k===n);s.classList.remove('tv-leaving','tv-land')});
   const s=slides[n];
   if(s.id==='s-title')ttlOffsets();
-  notes.innerHTML=`<b>${n+1}/${slides.length}</b> &nbsp; `+(s.dataset.notes||'');
+  notes.innerHTML=bulletNotes(s.dataset.notes||'');
   count.textContent=`${n+1} / ${slides.length}`;
   document.querySelectorAll('video').forEach(v=>{if(!s.contains(v))v.pause()});
   s.querySelectorAll('video').forEach(v=>{if(v===tvVid)return;v.currentTime=0;if(v.id==='introVid')v.pause();else v.play().catch(()=>{})});
