@@ -1006,7 +1006,7 @@ const tfo=el=>{const o=getComputedStyle(el).transformOrigin.split(' ').map(parse
 const tfm=(el,k)=>{const m=getComputedStyle(el).transform;if(!m||m==='none')return'none';const v=m.match(/-?[\d.e]+/g).map(Number);if(v.length!==6)return m;v[4]*=k;v[5]*=k;return`matrix(${v.join(',')})`};
 function playTV(t){
   const el=pick(slides[i],t.a);if(!el)return false;
-  tvOn=t;tvA=el;tvVid.src=t.src;tvVid.currentTime=0;
+  tvOn=t;tvA=el;tvVid.src=t.src;tvVid.currentTime=0;if(window.mqttPublish)mqttPublish();
   if(t.inplace){
     slides[i].classList.add('tv-leaving');tvVid.onended=endTV;
     const ph=el.closest('.photo');
@@ -1071,21 +1071,21 @@ function tvWatch(){clearInterval(tvWd);tvLast=-1;tvStall=0;tvStarted=false;
   tvVid.addEventListener('playing',()=>{tvStarted=true},{once:true});
   tvWd=setInterval(()=>{if(!tvOn){clearInterval(tvWd);return}
     const t=tvVid.currentTime;
-    if(document.hidden||(tvVid.paused&&!tvVid.ended)||t===tvLast)tvStall+=.4;else tvStall=0;
+    if((tvVid.paused&&!tvVid.ended)||t===tvLast)tvStall+=.4;else tvStall=0;
     tvLast=t;
-    if(tvStall>=(document.hidden?.4:tvStarted?1.6:7))endTV()},400)}
+    if(tvStall>=(tvStarted?4:12))endTV()},400)}
 // a phone/keyboard jump while a clip runs: stop the clip cleanly and show the slide
 function abortTV(){clearTimeout(tvGrow);clearInterval(tvWd);tvOn=null;tvVid.onended=null;tvVid.pause();
   tvBox.style.display='none';tvBox.style.opacity=0;if(tvVid.parentNode!==tvBox)tvBox.appendChild(tvVid);
   tvVid.classList.remove('alive','on');Object.assign(tvVid.style,{objectPosition:'',transform:'',transformOrigin:'',transition:''});
   slides.forEach(s=>s.classList.remove('tv-leaving','tv-land'))}
 TV.forEach(t=>{t.src=`assets/new/${t.name}.mp4`});
-// once the page has loaded, pull the clips into memory so they start instantly and can seek (no network wait mid-transition)
-addEventListener('load',()=>setTimeout(async()=>{for(const t of TV){try{const r=await fetch(t.src);if(r.ok)t.src=URL.createObjectURL(await r.blob())}catch(e){}}},800));
+// pull the clips into memory right away (all four in parallel, one retry), so they start instantly and cannot stall mid-transition
+TV.forEach(async t=>{for(let k=0;k<2;k++){try{const r=await fetch(t.src,{cache:'force-cache'});if(r.ok){t.src=URL.createObjectURL(await r.blob());return}}catch(e){}await new Promise(r=>setTimeout(r,1500))}});
 function next(){
   if(tvOn)return endTV();
   const t=TV.find(t=>t.from===slides[i].id&&t.src);
-  if(t&&!document.hidden&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
+  if(t&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
 function prev(){if(tvOn)return abortTV();const on=[...slides[i].querySelectorAll('.step.on')];if(on.length){on.at(-1).classList.remove('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i-1,true)}
 function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src=`assets/new/${name}.${exts[k]}`;
   if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
@@ -1140,9 +1140,9 @@ function mqttStart(){
     try{const c=mqtt.connect(u,{clientId:'abdeck_'+mqRoom+'_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
       c.on('connect',()=>{c.subscribe(BASE+'cmd');mqttPublish()});c.on('error',()=>{});
       c.on('message',(t,p)=>{try{const m=JSON.parse(p.toString());if(!m||!m.id||mqSeen[m.id])return;mqSeen[m.id]=1;
-        if(m.a==='next')next();else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
+        if(m.a==='next'){const now=Date.now();if(now-(window.__lastNext||0)<1200)return;window.__lastNext=now;next()}else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
       mq.push(c)}catch(e){}});
-  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now()});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
+  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now(),tv:!!tvOn});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
   setInterval(()=>window.mqttPublish(),10000);
 }
 addEventListener('load',()=>setTimeout(()=>{if(!LIVE&&!PREVIEW)mqttStart()},1500));

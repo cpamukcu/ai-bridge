@@ -70,7 +70,7 @@ footer button:active{transform:scale(.97);opacity:.85}
     else fetch('/api/cmd',{method:'POST',body:JSON.stringify({cmd:cmd,n:n})}).catch(function(){});
     try{navigator.vibrate&&navigator.vibrate(14)}catch(e){}
   }
-  $('nextBtn').onclick=function(){send('next')};
+  var lastTap=0;$('nextBtn').onclick=function(){var n=Date.now();if(n-lastTap<900)return;lastTap=n;send('next')};
   $('prevBtn').onclick=function(){send('prev')};
   $('aplus').onclick=function(){setNf(nf+2)};$('aminus').onclick=function(){setNf(nf-2)};
   $('listBtn').onclick=function(){$('list').hidden=false;var c=$('ol').querySelector('.cur');if(c)c.scrollIntoView({block:'center'})};
@@ -112,6 +112,7 @@ footer button:active{transform:scale(.97);opacity:.85}
     var notes=st.notes!==undefined&&st.notes!==''?st.notes:(sl?sl.notes:'');
     var key=cur+'|'+notes;
     $('num').textContent=cur+1;$('tot').textContent=total||'–';
+    var nb=$('nextBtn');nb.textContent=st.tv?'Video playing\u2026':'Next \u203A';nb.style.opacity=st.tv?'.55':'';
     $('title').textContent=sl?sl.title:'Slide '+(cur+1);
     var next=st.next!==undefined&&st.next!==''?st.next:(nx?nx.title:'');
     $('nxt').textContent=cur+1>=total&&total?'Last slide':next?'Next: '+next:'';
