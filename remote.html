@@ -2,87 +2,147 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<link rel="icon" href="assets/new/ai-bridge-logo.png">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>AI Bridge Remote</title>
 <style>
-:root{--bg:#111113;--card:#1d1d1f;--ink:#f5f5f7;--gray:#8e8e93;--coral:#E8604C;--teal:#3FA98A;--yellow:#F2B33D}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;overscroll-behavior:none}
-body{display:flex;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
-.top{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:var(--gray)}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff453a;margin-right:6px}
-.dot.on{background:#30d158}
-#timer{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
-#timer.warn{color:var(--yellow)}#timer.over{color:#ff453a}
-.slide{margin-top:14px;font-size:15px;color:var(--gray)}
-.slide b{color:var(--ink);font-size:22px}
-#notes{flex:1;overflow:auto;margin-top:12px;background:var(--card);border-radius:20px;padding:18px;font-size:20px;line-height:1.45}
-#notes b{color:var(--yellow)}
-#next{margin-top:10px;font-size:14px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.btns{display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-top:14px}
-button{border:none;border-radius:22px;font-size:22px;font-weight:700;padding:30px 0;color:#fff;font-family:inherit}
-#prev{background:#2c2c2e}#nxt{background:linear-gradient(90deg,var(--coral),var(--yellow))}
-button:active{transform:scale(.97);opacity:.85}
-.row{display:flex;gap:10px;margin-top:10px}
-.row button{flex:1;padding:12px 0;font-size:15px;background:#2c2c2e;border-radius:14px}
+:root{--bg:#000;--card:#1C1C1E;--fg:#F5F5F7;--white:#fff;--muted:#86868B;--blue:#0A84FF;--cyan:#5AC8FA;--amber:#FF9F0A;--green:#30D158;--red:#FF453A;--line:rgba(255,255,255,.12);--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Inter","Helvetica Neue",sans-serif;--nf:21px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
+body{display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 16px 0;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+header{display:flex;align-items:center;gap:10px;padding:12px 0 10px;font-size:14px;color:var(--muted)}
+#dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+#dot.ok{background:var(--green)}#dot.wait{background:var(--amber)}#dot.off{background:var(--red)}
+#stat{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#timer{font-variant-numeric:tabular-nums;font-size:17px;font-weight:600;color:var(--white);padding:6px 12px;border-radius:999px;background:var(--card)}
+#timer.run{color:var(--green)}#timer.warn{color:var(--amber)}#timer.over{color:var(--red)}
+#now{padding:6px 0 12px;border-bottom:1px solid var(--line)}
+.kick{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
+h1{margin:6px 0 4px;font-size:26px;line-height:1.15;font-weight:700;color:var(--white);text-wrap:balance}
+#nxt{margin:0;font-size:15px;color:var(--muted)}
+#meta{margin:14px 2px 0;font-size:13px;font-weight:600;letter-spacing:.06em;color:var(--cyan);font-variant-numeric:tabular-nums}
+#notes{flex:1;min-height:0;overflow-y:auto;padding:10px 2px 24px;font-size:var(--nf);line-height:1.5;color:var(--fg);-webkit-overflow-scrolling:touch}
+#notes .chip{display:inline-block;margin:6px 4px;padding:4px 12px;border-radius:999px;background:var(--amber);color:#000;font-size:.62em;font-weight:800;letter-spacing:.04em;vertical-align:middle;white-space:nowrap}
+#notes .after{color:var(--white)}
+#tools{display:flex;gap:8px;padding:8px 0}
+#tools button{flex:1;padding:10px 0;border-radius:12px;background:var(--card);font-size:15px;font-weight:600}
+footer{display:grid;grid-template-columns:1fr 2fr;gap:10px;padding:6px 0 calc(12px + env(safe-area-inset-bottom,0px))}
+footer button{height:96px;border-radius:22px;font-size:22px;font-weight:700;background:var(--card);color:var(--white);touch-action:manipulation}
+footer #nextBtn{background:var(--blue)}
+footer button:active{transform:scale(.97);opacity:.85}
+#list{position:fixed;inset:0;z-index:5;background:var(--bg);padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));overflow-y:auto}
+#list[hidden]{display:none}
+#list h2{margin:0 0 12px;font-size:22px;color:var(--white)}
+#list ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#list li button{width:100%;text-align:left;display:flex;gap:12px;padding:14px;border-radius:14px;background:var(--card);font-size:16px}
+#list li button span{color:var(--muted);font-variant-numeric:tabular-nums;width:24px;flex:none}
+#list li button.cur{outline:2px solid var(--blue)}
+#closeList{float:right;font-size:16px;color:var(--blue);padding:4px}
 </style>
 </head>
 <body>
-  <div class="top"><span><span class="dot" id="dot"></span><span id="conn">connecting…</span></span><span id="timer">00:00</span></div>
-  <div class="slide">Slide <b id="num">–</b> / <span id="tot">–</span></div>
-  <div id="notes">Waiting for the deck… Open the deck on the laptop first.</div>
-  <div id="next"></div>
-  <div class="btns"><button id="prev">‹ Back</button><button id="nxt">Next ›</button></div>
-  <div class="row"><button id="tstart">Start timer</button><button id="treset">Reset</button><button id="first">First slide</button></div>
+<header><i id="dot"></i><span id="stat">Connecting&#8230;</span><button id="timer" aria-label="Start or pause the timer">00:00</button></header>
+<section id="now"><p class="kick">Slide <span id="num">&ndash;</span> / <span id="tot">&ndash;</span></p><h1 id="title">Waiting for the deck</h1><p id="nxt"></p></section>
+<div id="meta"></div>
+<article id="notes" aria-live="polite">Open the deck on the laptop first, then scan the QR code from the Phone button.</article>
+<div id="tools"><button id="aminus" aria-label="Smaller text">A&#8722;</button><button id="aplus" aria-label="Bigger text">A+</button><button id="listBtn">All slides</button></div>
+<footer><button id="prevBtn">&#8249; Back</button><button id="nextBtn">Next &#8250;</button></footer>
+<div id="list" hidden><button id="closeList">Close</button><h2>Slides</h2><ol id="ol"></ol></div>
 <script src="vendor/mqtt.min.js"></script>
 <script>
-const $=id=>document.getElementById(id);
-const ROOM=(location.hash.slice(1)||'').toUpperCase(),NET=/^[A-Z0-9]{6}$/.test(ROOM);
-let mqC=[],DECKS=null;
-const send=(cmd,n)=>{
-  if(NET){const m=JSON.stringify({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:cmd==='goto'?'go':cmd,n});mqC.forEach(c=>c.connected&&c.publish('ai-bridge-deck/v1/'+ROOM+'/cmd',m))}
-  else fetch('/api/cmd',{method:'POST',body:JSON.stringify({cmd,n})}).catch(()=>{});
-  if(navigator.vibrate)navigator.vibrate(15)};
-$('nxt').onclick=()=>send('next');$('prev').onclick=()=>send('prev');$('first').onclick=()=>send('goto',0);
-// swipe left/right on the notes also works
-let sx=null;document.addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
-document.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>70)send(dx<0?'next':'prev');sx=null});
-// timer: 10 minutes talk, yellow at 9, red after 10
-let t0=null,acc=0;
-const fmt=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');
-$('tstart').onclick=()=>{if(t0){acc+=(Date.now()-t0)/1000;t0=null;$('tstart').textContent='Start timer'}else{t0=Date.now();$('tstart').textContent='Pause'}};
-$('treset').onclick=()=>{t0=t0?Date.now():null;acc=0};
-setInterval(()=>{const s=acc+(t0?(Date.now()-t0)/1000:0);const el=$('timer');el.textContent=fmt(s);el.className=s>600?'over':s>540?'warn':''},250);
-let last='',lastT=0;
-const clean=h=>h.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
-function show(st,fresh){
-  $('dot').className='dot on';$('conn').textContent=fresh?'deck connected':'deck not open';
-  const sl=DECKS&&DECKS[st.slide],nx=DECKS&&DECKS[st.slide+1];
-  const notes=st.notes!==undefined?st.notes:(sl?sl.notes:''),next=st.next!==undefined?st.next:(nx?nx.title:'');
-  const key=st.slide+'|'+notes;
-  if(key!==last){last=key;$('num').textContent=st.slide+1;$('tot').textContent=st.total;$('notes').innerHTML=notes||'(no notes)';$('next').textContent=next?'Next: '+next:'';$('notes').scrollTop=0}
-}
-async function poll(){
-  try{const st=await (await fetch('/api/state',{cache:'no-store'})).json();show(st,Date.now()-st.t<4000)}
-  catch(e){$('dot').className='dot';$('conn').textContent='no connection'}
-  setTimeout(poll,500);
-}
-if(NET){
-  // notes and titles come from the deck page itself (same site), so only slide numbers cross the relay
-  fetch('index.html').then(r=>r.text()).then(t=>{const d=new DOMParser().parseFromString(t,'text/html');
-    DECKS=[...d.querySelectorAll('.slide')].map(x=>{const h=x.querySelector('h1,h2');return{notes:x.dataset.notes||'',title:h?clean(h.innerHTML):'Video'}});
-    if(window.lastState)show(window.lastState,true)}).catch(()=>{});
-  const BASE='ai-bridge-deck/v1/'+ROOM+'/';$('conn').textContent='connecting…';
-  ['wss://broker-cn.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://broker.emqx.io:8084/mqtt'].forEach(u=>{
-    try{const c=mqtt.connect(u,{clientId:'abphone_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
-      c.on('connect',()=>{c.subscribe(BASE+'state');c.publish(BASE+'cmd',JSON.stringify({id:'hi'+Date.now().toString(36),a:'sync'}));$('dot').className='dot on'});
-      c.on('error',()=>{});
-      c.on('message',(t,p)=>{try{const st=JSON.parse(p.toString());lastT=Date.now();window.lastState=st;show(st,true)}catch(e){}});
-      mqC.push(c)}catch(e){}});
-  setInterval(()=>{if(lastT&&Date.now()-lastT>25000)$('conn').textContent='deck not open'},3000);
-}else poll();
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var ROOM=(location.hash.slice(1)||'').toUpperCase(),NET=/^[A-Z0-9]{6}$/.test(ROOM);
+  var mqC=[],DECKS=null,cur=0,total=0,lastKey='',lastT=0,lastState=null;
+  var nf=21;try{nf=parseInt(localStorage.getItem('abNf'),10)||21}catch(e){}
+  function setNf(v){nf=Math.max(15,Math.min(34,v));document.documentElement.style.setProperty('--nf',nf+'px');try{localStorage.setItem('abNf',nf)}catch(e){}}
+  setNf(nf);
+  var clean=function(h){return h.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()};
+
+  function send(cmd,n){
+    if(NET){var m=JSON.stringify({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),a:cmd==='goto'?'go':cmd,n:n});mqC.forEach(function(c){c.connected&&c.publish('ai-bridge-deck/v1/'+ROOM+'/cmd',m)})}
+    else fetch('/api/cmd',{method:'POST',body:JSON.stringify({cmd:cmd,n:n})}).catch(function(){});
+    try{navigator.vibrate&&navigator.vibrate(14)}catch(e){}
+    startTimer()}
+  $('nextBtn').onclick=function(){send('next')};
+  $('prevBtn').onclick=function(){send('prev')};
+  $('aplus').onclick=function(){setNf(nf+2)};$('aminus').onclick=function(){setNf(nf-2)};
+  $('listBtn').onclick=function(){$('list').hidden=false;var c=$('ol').querySelector('.cur');if(c)c.scrollIntoView({block:'center'})};
+  $('closeList').onclick=function(){$('list').hidden=true};
+  var sx=null;document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>90)send(dx<0?'next':'prev');sx=null});
+
+  // timer: tap to pause or resume; starts by itself on the first tap; amber at 9:00, red after 10:00
+  var t0=0,acc=0,running=false;
+  function startTimer(){if(!running){running=true;t0=Date.now();$('timer').classList.add('run')}}
+  $('timer').onclick=function(){if(running){acc+=Date.now()-t0;running=false;$('timer').classList.remove('run')}else startTimer()};
+  setInterval(function(){var s=Math.floor((acc+(running?Date.now()-t0:0))/1000),el=$('timer');el.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+    el.classList.toggle('over',s>600);el.classList.toggle('warn',s>540&&s<=600)},500);
+
+  // notes: a small "Slide · time · clock" line, then the speech with [CLICK] cues as amber chips
+  function renderNotes(html){
+    var meta='',body=html||'';
+    var m=body.match(/^\s*<b>([^<]*)<\/b>\s*(?:<br\s*\/?>)?/);
+    if(m){meta=m[1];body=body.slice(m[0].length)}
+    body=body.replace(/<b>(\[CLICK[^\]]*\])<\/b>/g,'\u0001$1\u0001').replace(/<[^>]+>/g,'');
+    var el=$('notes');el.textContent='';$('meta').textContent=meta;
+    var parts=body.split('\u0001'),after=false;
+    parts.forEach(function(p,i){
+      if(i%2===1){var c=document.createElement('span');c.className='chip';c.textContent='CLICK';el.appendChild(c);after=true;return}
+      var s=document.createElement('span');s.className=after?'after':'';s.textContent=p;el.appendChild(s)});
+    if(!body.trim())el.textContent='(no notes)';
+    el.scrollTop=0}
+
+  function buildList(){
+    var ol=$('ol');ol.textContent='';
+    (DECKS||[]).forEach(function(d,i){var li=document.createElement('li'),b=document.createElement('button');
+      var sp=document.createElement('span');sp.textContent=i+1;b.appendChild(sp);b.appendChild(document.createTextNode(d.title));
+      b.onclick=function(){send('goto',i);$('list').hidden=true};li.appendChild(b);ol.appendChild(li)})}
+
+  function show(st,fresh){
+    lastState=st;cur=st.slide;total=st.total||total;
+    $('dot').className=fresh?'ok':'off';$('stat').textContent=fresh?'Connected to the slides':'Deck not open';
+    var sl=DECKS&&DECKS[cur],nx=DECKS&&DECKS[cur+1];
+    var notes=st.notes!==undefined&&st.notes!==''?st.notes:(sl?sl.notes:'');
+    var key=cur+'|'+notes;
+    $('num').textContent=cur+1;$('tot').textContent=total||'–';
+    $('title').textContent=sl?sl.title:'Slide '+(cur+1);
+    var next=st.next!==undefined&&st.next!==''?st.next:(nx?nx.title:'');
+    $('nxt').textContent=cur+1>=total&&total?'Last slide':next?'Next: '+next:'';
+    var bs=$('ol').querySelectorAll('button');for(var i=0;i<bs.length;i++)bs[i].classList.toggle('cur',i===cur);
+    if(key!==lastKey){lastKey=key;renderNotes(notes)}}
+
+  function loadDeck(){
+    fetch('index.html').then(function(r){return r.text()}).then(function(t){
+      var d=new DOMParser().parseFromString(t,'text/html');
+      DECKS=[].slice.call(d.querySelectorAll('.slide')).map(function(x,i){var h=x.querySelector('h1,h2');return{notes:x.dataset.notes||'',title:h?clean(h.innerHTML):'Slide '+(i+1)}});
+      if(!total)total=DECKS.length;buildList();if(lastState)show(lastState,true)}).catch(function(){})}
+
+  // wake lock keeps the phone screen on while presenting
+  var lock=null;
+  function wake(){try{if(navigator.wakeLock&&!lock)navigator.wakeLock.request('screen').then(function(l){lock=l;l.addEventListener('release',function(){lock=null})}).catch(function(){})}catch(e){}}
+  document.addEventListener('click',wake);document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')wake()});
+
+  function poll(){
+    fetch('/api/state',{cache:'no-store'}).then(function(r){return r.json()}).then(function(st){show(st,Date.now()-st.t<4000)})
+      .catch(function(){$('dot').className='off';$('stat').textContent='No connection'})
+      .then(function(){setTimeout(poll,500)})}
+
+  loadDeck();
+  if(NET){
+    var BASE='ai-bridge-deck/v1/'+ROOM+'/';$('dot').className='wait';$('stat').textContent='Connecting…';
+    ['wss://broker-cn.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://broker.emqx.io:8084/mqtt'].forEach(function(u){
+      try{var c=mqtt.connect(u,{clientId:'abphone_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
+        c.on('connect',function(){c.subscribe(BASE+'state');c.publish(BASE+'cmd',JSON.stringify({id:'hi'+Date.now().toString(36),a:'sync'}));$('dot').className='wait';$('stat').textContent='Waiting for the laptop ('+ROOM+')'});
+        c.on('error',function(){});
+        c.on('message',function(t,p){try{var st=JSON.parse(p.toString());lastT=Date.now();show(st,true)}catch(e){}});
+        mqC.push(c)}catch(e){}});
+    setInterval(function(){if(lastT&&Date.now()-lastT>25000){$('dot').className='off';$('stat').textContent='Deck not open'}},3000);
+  }else poll();
+})();
 </script>
 </body>
 </html>
