@@ -54,6 +54,7 @@ footer button:active{transform:scale(.97);opacity:.85}
 <div id="ver" style="text-align:center;font-size:11px;color:#86868B;padding:2px 0">Build 26 Oct 19:01</div><div id="tools"><button id="aminus" aria-label="Smaller text">A&#8722;</button><button id="aplus" aria-label="Bigger text">A+</button><button id="listBtn">All slides</button></div>
 <footer><button id="prevBtn">&#8249; Back</button><button id="nextBtn">Next &#8250;</button></footer>
 <div id="list" hidden><button id="closeList">Close</button><h2>Slides</h2><ol id="ol"></ol></div>
+<script>window.onerror=function(m){var s=document.getElementById("stat");if(s)s.textContent="Error: "+m;return false}</script>
 <script src="vendor/mqtt.min.js"></script>
 <script>
 (function(){
@@ -95,7 +96,7 @@ footer button:active{transform:scale(.97);opacity:.85}
     var ul=document.createElement('ul');ul.className='nb';
     body.split('\u0001').forEach(function(part,idx){
       if(idx>0){var c=document.createElement('li');c.className='nclick';ul.appendChild(c)}
-      part.split(/(?<=[.?!])\s+/).forEach(function(t){t=t.trim();if(!t)return;var li=document.createElement('li');li.textContent=t;ul.appendChild(li)})});
+      part.replace(/([.?!])\s+/g,'$1\u0002').split('\u0002').forEach(function(t){t=t.trim();if(!t)return;var li=document.createElement('li');li.textContent=t;ul.appendChild(li)})});
     if(!ul.children.length)el.textContent='(no notes)';else el.appendChild(ul);
     el.scrollTop=0}
 
@@ -137,14 +138,27 @@ footer button:active{transform:scale(.97);opacity:.85}
 
   loadDeck();
   if(NET){
-    var BASE='ai-bridge-deck/v1/'+ROOM+'/';$('dot').className='wait';$('stat').textContent='Connecting…';
-    ['wss://broker-cn.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://broker.emqx.io:8084/mqtt'].forEach(function(u){
+    var BASE='ai-bridge-deck/v1/'+ROOM+'/',born=Date.now();$('dot').className='wait';$('stat').textContent='Connecting\u2026';
+    var BROKERS=['wss://broker-cn.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://broker.emqx.io:8084/mqtt'];
+    if(!window.mqtt){$('stat').textContent='Relay library missing: reload the page'}
+    else BROKERS.forEach(function(u){
       try{var c=mqtt.connect(u,{clientId:'abphone_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
-        c.on('connect',function(){c.subscribe(BASE+'state');c.publish(BASE+'cmd',JSON.stringify({id:'hi'+Date.now().toString(36),a:'sync'}));$('dot').className='wait';$('stat').textContent='Waiting for the laptop ('+ROOM+')'});
+        c.on('connect',function(){c.subscribe(BASE+'state');c.publish(BASE+'cmd',JSON.stringify({id:'hi'+Date.now().toString(36),a:'sync'}))});
         c.on('error',function(){});
         c.on('message',function(t,p){try{var st=JSON.parse(p.toString());lastT=Date.now();show(st,true)}catch(e){}});
         mqC.push(c)}catch(e){}});
-    setInterval(function(){if(lastT&&Date.now()-lastT>25000){$('dot').className='off';$('stat').textContent='Deck not open'}},3000);
+    // one honest status line: deck seen / relay up but deck silent / no relay reachable
+    setInterval(function(){
+      var up=mqC.filter(function(c){return c.connected}).length;
+      if(lastT&&Date.now()-lastT<25000){$('dot').className='ok';$('stat').textContent='Connected to the slides'}
+      else if(up>0){$('dot').className='wait';$('stat').textContent='Waiting for the laptop (code '+ROOM+') \u00b7 '+up+'/3 relays'}
+      else if(Date.now()-born>12000){$('dot').className='off';$('stat').textContent='Cannot reach the relay. Try mobile data or a phone hotspot.'}
+    },1000);
+  }else if(/github\.io$/.test(location.hostname)){
+    // opened without the code: ask for it (the laptop shows it under the QR code)
+    $('dot').className='off';$('stat').textContent='Enter the code from the laptop';
+    var n=$('notes');n.innerHTML='<p style="color:#fff">On the laptop press <b>P</b> or tap <b>Phone</b>. Type the 6-character code here.</p><input id="code" maxlength="6" autocomplete="off" autocapitalize="characters" style="width:100%;font:700 28px/1 inherit;letter-spacing:.2em;text-transform:uppercase;text-align:center;padding:16px;border-radius:16px;border:1px solid rgba(255,255,255,.2);background:#1C1C1E;color:#fff"><button id="go" style="width:100%;margin-top:12px;padding:16px;border-radius:16px;background:#0A84FF;font-size:18px;font-weight:700;color:#fff">Connect</button>';
+    $('go').onclick=function(){var v=$('code').value.trim().toUpperCase();if(/^[A-Z0-9]{6}$/.test(v)){location.hash=v;location.reload()}else $('code').style.borderColor='#FF453A'};
   }else poll();
 })();
 </script>
