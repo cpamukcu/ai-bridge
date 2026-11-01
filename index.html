@@ -628,7 +628,8 @@ img[data-a]:not([src]){visibility:hidden}
 .tst .hy:last-child::before{background:#FF9F0A;box-shadow:0 0 18px #FF9F0A}
 .tst .hy{overflow:visible}
 /* AI-generated video mark */
-.photo:has(video.alive.on)::before{content:"AI generated";position:absolute;right:40px;bottom:36px;z-index:3;font:600 20px/1 -apple-system,"Inter",sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.9);padding:11px 20px;border-radius:99px;background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.22)}
+#tv::after{content:"AI";position:absolute;right:calc(40px*var(--k,1));bottom:calc(36px*var(--k,1));z-index:3;font:600 calc(20px*var(--k,1))/1 -apple-system,"Inter",sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.9);padding:calc(11px*var(--k,1)) calc(20px*var(--k,1));border-radius:99px;background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.22)}
+.photo:has(video.alive.on)::before{content:"AI";position:absolute;right:40px;bottom:36px;z-index:3;font:600 20px/1 -apple-system,"Inter",sans-serif;letter-spacing:.04em;color:rgba(255,255,255,.9);padding:11px 20px;border-radius:99px;background:rgba(10,20,40,.55);border:1px solid rgba(255,255,255,.22)}
 .tv-leaving .tst .hyp::before,.tv-leaving .tst .hy::before{opacity:0;transition:opacity .4s}
 /* logos centered */
 .ws{display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -642,6 +643,7 @@ img[data-a]:not([src]){visibility:hidden}
 /* ladder: bigger type, centered logos */
 .ladder .rung{align-items:center;text-align:center;padding:44px 28px 38px}
 .ladder .rung .n{font-size:26px;opacity:.7;margin-bottom:6px}
+.ladder{margin-top:30px}.ladder .rung .ric{width:92px;height:92px;border-radius:24px;overflow:hidden;margin-bottom:16px}.ladder .rung .ric img{width:100%;height:100%;object-fit:cover;display:block}
 .ladder .rung .st{font-size:24px;margin-top:0}
 .ladder .rung h3{font-size:70px;margin:20px 0 14px}
 .ladder .rung p{font-size:30px;line-height:1.3}
@@ -685,7 +687,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 2 PROBLEM -->
-<section class="slide" id="s-problem" data-notes="&lt;b&gt;Slide 2 · 40 s · clock 1:05&lt;/b&gt;&lt;br&gt;The Digital Education Council asked almost 4,000 university students in 16 countries about AI. Almost 90% already use it, and more than half use it every week. So using AI isn&#x27;t the problem. The skill is. Almost 60% say they don&#x27;t have enough AI knowledge and skills, and almost half don&#x27;t feel ready for a workplace with AI. &lt;b&gt;[CLICK · video 8 s]&lt;/b&gt; So most students use AI, but not many use it well. Why does this happen? Let me show you three reasons.">
+<section class="slide" id="s-problem" data-notes="&lt;b&gt;Slide 2 · 40 s · clock 1:05&lt;/b&gt;&lt;br&gt;The Digital Education Council asked about four thousand university students in sixteen countries about AI. Nine in ten already use it, and over half use it every week. So using AI isn&#x27;t the problem. The skill is. Six in ten say they don&#x27;t have enough AI knowledge and skills, and half don&#x27;t feel ready for a workplace with AI. &lt;b&gt;[CLICK · video 8 s]&lt;/b&gt; So most students use AI, but not many use it well. Why does this happen? Let me show you three reasons.">
   <div class="label r">The problem</div>
   <h2 class="r">Students use AI. <span class="grad">But not well.</span></h2>
   <div class="bento">
@@ -704,14 +706,14 @@ img[data-a]:not([src]){visibility:hidden}
   <div class="label r">Why?</div>
   <h2 class="r" style="font-size:96px">Three reasons.</h2>
   <div class="tri">
-    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-skill.png" alt=""></div><div class="gl-lbl">01</div><h3>No skill</h3><p>Nobody shows how.</p><div class="fix">Fix: short courses.</div></div>
-    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-credits.png" alt=""></div><div class="gl-lbl">02</div><h3>No easy start</h3><p>Tools cost money.</p><div class="fix">Fix: free credits.</div></div>
-    <div class="glass rs key r"><div class="rs-ic"><img class="ico" src="assets/new/icon-circles.png" alt=""></div><div class="gl-lbl">03</div><h3>Small circles</h3><p>We stay in our own group.</p><div class="fix amber">Fix: start with bridges.</div></div>
+    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-skill.png" alt=""></div><h3>No skill</h3><p>Nobody shows how.</p><div class="fix">Fix: short courses.</div></div>
+    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-credits.png" alt=""></div><h3>No easy start</h3><p>Tools cost money.</p><div class="fix">Fix: free credits.</div></div>
+    <div class="glass rs key r"><div class="rs-ic"><img class="ico" src="assets/new/icon-circles.png" alt=""></div><h3>Small circles</h3><p>We stay in our own group.</p><div class="fix amber">Fix: start with bridges.</div></div>
   </div>
 </section>
 
 <!-- 3b PROOF -->
-<section class="slide" data-notes="&lt;b&gt;Slide 4 · 45 s · clock 2:25&lt;/b&gt;&lt;br&gt;Is this a new idea? No. The biggest AI companies are already competing for students. Google offers its AI to students free for a year, OpenAI brought ChatGPT Edu to 120,000 students at Indiana University, Anthropic built Claude for Education, and GitHub gave free tools to more than 1.5 million students. They do it because a student who learns a tool today will keep using it at work later. Qwen gives free tokens to developers, but I couldn&#x27;t find anything made for students. So that&#x27;s the gap.">
+<section class="slide" data-notes="&lt;b&gt;Slide 4 · 45 s · clock 2:25&lt;/b&gt;&lt;br&gt;Is this a new idea? No. The biggest AI companies are already competing for students. Google offers its AI to students free for a year, OpenAI brought ChatGPT Edu to one hundred twenty thousand students at Indiana University, Anthropic built Claude for Education, and GitHub gave free tools to over one and a half million students. They do it because a student who learns a tool today will keep using it at work later. Qwen gives free tokens to developers, but I couldn&#x27;t find anything made for students. So that&#x27;s the gap.">
   <div class="label r">Proof it works</div>
   <h2 class="r" style="font-size:96px">Every AI company <span class="grad live">wants students.</span></h2>
   <div class="proof">
@@ -748,7 +750,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 5 WHO -->
-<section class="slide who-s" data-notes="&lt;b&gt;Slide 6 · 40 s · clock 3:30&lt;/b&gt;&lt;br&gt;So who is this for? International students in China. There were almost 400,000 of them in 2024 to 2025. They&#x27;re far from home, they live in small groups, and a lot of them can&#x27;t easily use ChatGPT here. Around the world, more than 60% of students use ChatGPT more than any other AI tool. In China it&#x27;s hard to get, but Qwen works here, so it&#x27;s an easy place for these students to start.">
+<section class="slide who-s" data-notes="&lt;b&gt;Slide 6 · 40 s · clock 3:30&lt;/b&gt;&lt;br&gt;So who is this for? International students in China. There were almost four hundred thousand of them in the last school year. They&#x27;re far from home, they live in small groups, and a lot of them can&#x27;t easily use ChatGPT here. Worldwide, over sixty percent of students use ChatGPT most. In China it&#x27;s hard to get, but Qwen works here, so it&#x27;s an easy place for these students to start.">
   <div class="photo shade-l"><img data-a="h4-who" alt=""></div>
   <div class="label r">Who</div>
   <div class="big r" data-count>380,000</div>
@@ -778,7 +780,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 6b ACADEMY DETAIL -->
-<section class="slide" data-notes="&lt;b&gt;Slide 8 · 45 s · clock 4:45&lt;/b&gt;&lt;br&gt;This is how Qwen Academy looks for a student, on a phone or a desktop, whatever is easy for them. Let&#x27;s take a student called Kiki, from the UK. She can see her credits and badges, and she&#x27;s helping three friends from other groups. Two already have the Starter badge. When one more friend earns a badge, Kiki gets the Bridge badge. On the right are four starter courses: business, design, research, and thesis. Each takes about 10 minutes and has one real task.">
+<section class="slide" data-notes="&lt;b&gt;Slide 8 · 45 s · clock 4:45&lt;/b&gt;&lt;br&gt;This is how Qwen Academy looks for a student, on a phone or a desktop, whatever is easy for them. Let&#x27;s take a student called Kiki, from the UK. She can see her credits and badges, and she&#x27;s helping three friends from other groups. Two already have the Starter badge. When one more friend earns a badge, Kiki gets the Bridge badge. On the right are four starter courses: business, design, research, and thesis. Each takes about ten minutes and has one real task.">
   <div style="display:grid;grid-template-columns:460px 1fr;gap:120px;align-items:center;height:100%">
     <div class="zoom">
       <div class="phone glass"><div class="scr">
@@ -810,7 +812,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 8 DATA -->
-<section class="slide" data-scene="data" data-notes="&lt;b&gt;Slide 9 · 65 s · clock 5:50&lt;/b&gt;&lt;br&gt;Does starting with bridge students really work? I couldn&#x27;t find a public network of international students, so I used a real one as a stand-in: almost 470 students at Caltech, in 8 houses. &lt;b&gt;[CLICK]&lt;/b&gt; Each colour is one house. Only about half of the friendships go between houses; if students mixed freely, it would be almost 90%. &lt;b&gt;[CLICK]&lt;/b&gt; Then I ran a simulation. A skill starts with 5 students in one house and spreads through their friends. I ran it 300 times for every house. Starting with random students, it reaches about 4 of the other 7 houses. Starting with bridge students, it reaches 6. Bridge students connect different groups, which in network terms means high betweenness. So we start with them. The spread on screen is an illustration; the bar numbers come from the real runs.">
+<section class="slide" data-scene="data" data-notes="&lt;b&gt;Slide 9 · 65 s · clock 5:50&lt;/b&gt;&lt;br&gt;Does starting with bridge students really work? I couldn&#x27;t find a public network of international students, so I used a real one as a stand-in: about four hundred seventy students at Caltech, in eight houses. &lt;b&gt;[CLICK]&lt;/b&gt; Each colour is one house. Only about half of the friendships go between houses; if students mixed freely, it would be nearly ninety percent. &lt;b&gt;[CLICK]&lt;/b&gt; Then I ran a simulation. A skill starts with five students in one house and spreads through their friends. I ran it three hundred times for every house. Starting with random students, it reaches about four of the other seven houses. Starting with bridge students, it reaches six. Bridge students connect different groups, which in network terms means high betweenness. So we start with them. The spread on screen is an illustration; the bar numbers come from the real runs.">
   <div class="data">
     <div class="net zoom"><img src="assets/network.svg" alt="Caltech student friendship network" style="width:100%"></div>
     <div>
@@ -836,33 +838,33 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 9 LADDER -->
-<section class="slide" data-notes="&lt;b&gt;Slide 10 · 35 s · clock 6:25&lt;/b&gt;&lt;br&gt;The ladder has five steps, with one metric for each. Discover: students watch a 1-minute Qwen lesson on Douyin. Connect: they join our WeChat group. Learn: they start the first course and get the Starter badge. Create: they build a group project on GitHub and get the Builder badge. Spread: they invite a friend from another group and get the Bridge badge. We don&#x27;t use paid ads.">
+<section class="slide" data-notes="&lt;b&gt;Slide 10 · 35 s · clock 6:25&lt;/b&gt;&lt;br&gt;The ladder has five steps, with one metric for each. Discover: students watch a one-minute Qwen lesson on Douyin. Connect: they join our WeChat group. Learn: they start the first course and get the Starter badge. Create: they build a group project on GitHub and get the Builder badge. Spread: they invite a friend from another group and get the Bridge badge. We don&#x27;t use paid ads.">
   <div class="photo dim shade-v"><img data-a="s2-ladder" alt=""></div>
   <div class="label r">The ladder</div>
   <h2 class="r" style="font-size:96px">Five small steps.</h2>
   <div class="ladder">
-    <div class="rung glass r" style="--i:0"><div class="n">1</div><div class="st">Discover</div><h3>Watch</h3><p>1-minute Qwen lesson</p><div class="rf"><span class="ic"><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span></span><span class="me">Views</span></div></div>
-    <div class="rung glass r" style="--i:1"><div class="n">2</div><div class="st">Connect</div><h3>Join</h3><p>Our student group</p><div class="rf"><span class="ic"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:52px;border-radius:12px"></span><span class="me">New members</span></div></div>
-    <div class="rung glass r" style="--i:2"><div class="n">3</div><div class="st">Learn</div><h3>Start</h3><p>First course</p><div class="rf"><span class="ic"><div class="badge bz mini" id="bz"><b>1</b></div></span><span class="me">Starter badges</span></div></div>
-    <div class="rung glass r" style="--i:3"><div class="n">4</div><div class="st">Create</div><h3>Build</h3><p>Group project on GitHub</p><div class="rf"><span class="ic"><div class="badge sv mini" id="sv"><b>2</b></div></span><span class="me">Active after 4 weeks</span></div></div>
-    <div class="rung glass key r" style="--i:4"><div class="n">5</div><div class="st amber">Spread</div><h3>Invite</h3><p>Help a friend from another group</p><div class="rf"><span class="ic"><div class="badge gd mini" id="gd"><b>3</b></div></span><span class="me">Friends invited</span></div></div>
+    <div class="rung glass r" style="--i:0"><div class="ric"><img src="assets/new/icon-watch.png" alt="" onerror="this.parentNode.remove()"></div><div class="st">Discover</div><h3>Watch</h3><p>1-minute Qwen lesson</p><div class="rf"><span class="ic"><span class="pf"><img src="assets/logos/douyin-logo.svg" alt="Douyin"></span></span><span class="me">Views</span></div></div>
+    <div class="rung glass r" style="--i:1"><div class="ric"><img src="assets/new/icon-join.png" alt="" onerror="this.parentNode.remove()"></div><div class="st">Connect</div><h3>Join</h3><p>Our student group</p><div class="rf"><span class="ic"><img src="assets/logos/wechat-logo.png" alt="WeChat" style="height:52px;border-radius:12px"></span><span class="me">New members</span></div></div>
+    <div class="rung glass r" style="--i:2"><div class="ric"><img src="assets/new/icon-course.png" alt="" onerror="this.parentNode.remove()"></div><div class="st">Learn</div><h3>Start</h3><p>First course</p><div class="rf"><span class="ic"><div class="badge bz mini" id="bz"><b>1</b></div></span><span class="me">Starter badges</span></div></div>
+    <div class="rung glass r" style="--i:3"><div class="ric"><img src="assets/new/icon-build.png" alt="" onerror="this.parentNode.remove()"></div><div class="st">Create</div><h3>Build</h3><p>Group project on GitHub</p><div class="rf"><span class="ic"><div class="badge sv mini" id="sv"><b>2</b></div></span><span class="me">Active after 4 weeks</span></div></div>
+    <div class="rung glass key r" style="--i:4"><div class="ric"><img src="assets/new/icon-invite.png" alt="" onerror="this.parentNode.remove()"></div><div class="st amber">Spread</div><h3>Invite</h3><p>Help a friend from another group</p><div class="rf"><span class="ic"><div class="badge gd mini" id="gd"><b>3</b></div></span><span class="me">Friends invited</span></div></div>
   </div>
   <div class="src">Douyin = social publishing · WeChat and GitHub = social community · no paid ads</div>
 </section>
 
 <!-- 10 ACTIVITIES -->
-<section class="slide" data-notes="&lt;b&gt;Slide 11 · 35 s · clock 7:00&lt;/b&gt;&lt;br&gt;There are three activities, and each one comes from the data. First, Bridge Seeds: the first 8 to 10 students are bridge students, picked by their friends from other groups. Second, Qwen Lessons: almost 60% of students lack skills, so we make four short videos with one task each. Third, Build Together: groups of three, from different countries, work on one project for four weeks, and then we have Demo Day.">
+<section class="slide" data-notes="&lt;b&gt;Slide 11 · 35 s · clock 7:00&lt;/b&gt;&lt;br&gt;There are three activities, and each one comes from the data. First, Bridge Seeds: the first eight to ten students are bridge students, picked by their friends from other groups. Second, Qwen Lessons: six in ten students lack skills, so we make four short videos with one task each. Third, Build Together: groups of three, from different countries, work on one project for four weeks, and then we have Demo Day.">
   <div class="label r">What we do</div>
   <h2 class="r" style="font-size:96px">Three activities.</h2>
   <div class="tri">
-    <div class="glass rs key r"><div class="gl-lbl">01</div><h3>Bridge Seeds</h3><p>First 8–10 students are bridges.</p><div class="fix amber">Why: they reach more groups.</div></div>
-    <div class="glass rs r"><div class="gl-lbl">02</div><h3>Qwen Lessons</h3><p>4 short videos, 1 task each.</p><div class="fix">Why: 58% lack skills.</div></div>
-    <div class="glass rs r"><div class="gl-lbl">03</div><h3>Build Together</h3><p>Mixed groups of 3, Demo Day.</p><div class="fix">Why: friends learn together.</div></div>
+    <div class="glass rs key r"><div class="rs-ic"><img class="ico" src="assets/new/icon-seeds.png" alt="" onerror="this.parentNode.remove()"></div><h3>Bridge Seeds</h3><p>First 8–10 students are bridges.</p><div class="fix amber">Why: they reach more groups.</div></div>
+    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-lessons.png" alt="" onerror="this.parentNode.remove()"></div><h3>Qwen Lessons</h3><p>4 short videos, 1 task each.</p><div class="fix">Why: 58% lack skills.</div></div>
+    <div class="glass rs r"><div class="rs-ic"><img class="ico" src="assets/new/icon-together.png" alt="" onerror="this.parentNode.remove()"></div><h3>Build Together</h3><p>Mixed groups of 3, Demo Day.</p><div class="fix">Why: friends learn together.</div></div>
   </div>
 </section>
 
 <!-- 11 TEST -->
-<section class="slide" id="s-test" data-notes="&lt;b&gt;Slide 12 · 50 s · clock 7:50&lt;/b&gt;&lt;br&gt;How would I know it works? I&#x27;d run a pilot with 100 to 200 students. Every invite link shows which student brought which friend, and I&#x27;d ask one question: who do you ask for AI help? That gives me a real network, which I measure in NodeXL. My three hypotheses: higher betweenness brings more sign-ups from other groups; higher degree means more invited friends earn badges; and spanning structural holes means more Bridge badges and longer activity. &lt;b&gt;[CLICK · video 10 s]&lt;/b&gt; Before I finish, let me be honest about the limits of this project, and about how I used AI to build it.">
+<section class="slide" id="s-test" data-notes="&lt;b&gt;Slide 12 · 50 s · clock 7:50&lt;/b&gt;&lt;br&gt;How would I know it works? I&#x27;d run a pilot with one hundred to two hundred students. Every invite link shows which student brought which friend, and I&#x27;d ask one question: who do you ask for AI help? That gives me a real network, which I measure in NodeXL. My three hypotheses: higher betweenness brings more sign-ups from other groups; higher degree means more invited friends earn badges; and spanning structural holes means more Bridge badges and longer activity. &lt;b&gt;[CLICK · video 10 s]&lt;/b&gt; Before I finish, let me be honest about the limits of this project, and about how I used AI to build it.">
   <div class="photo shade-l tst-photo" id="tstPhoto"><img data-a="s3-chrome" alt=""></div>
   <div class="tst">
     <div class="label r">Evaluation model · pilot of 100–200 students</div>
@@ -877,7 +879,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 13 END: conclusion + thank you -->
-<section class="slide" id="s-end" data-scene="faint" data-notes="&lt;b&gt;Slide 13 · 55 s · clock 8:45&lt;/b&gt;&lt;br&gt;The data is a stand-in: Caltech students from 2005, not international students in China, and I haven&#x27;t run the campaign yet. AI helped me find the data, run the analysis, and check sources. The videos and images here are AI generated, and they&#x27;re marked. But AI can&#x27;t know real people, so it can&#x27;t pick the bridge students, and I checked every number myself. To finish: students use AI, but not well. Qwen Academy helps: you learn, earn a badge, get credits, and help a friend, so you both win. Start with the bridge students, and learn AI by building. Thank you, and I&#x27;m happy to take questions.">
+<section class="slide" id="s-end" data-scene="faint" data-notes="&lt;b&gt;Slide 13 · 55 s · clock 8:45&lt;/b&gt;&lt;br&gt;The data is a stand-in: Caltech students from two thousand five, not international students in China, and I haven&#x27;t run the campaign yet. AI helped me find the data, run the analysis, and check sources. The videos and images here are AI generated, and they&#x27;re marked. But AI can&#x27;t know real people, so it can&#x27;t pick the bridge students, and I checked every number myself. To finish: students use AI, but not well. Qwen Academy helps: you learn, earn a badge, get credits, and help a friend, so you both win. Start with the bridge students, and learn AI by building. Thank you, and I&#x27;m happy to take questions.">
   <div class="photo shade-v"><img data-a="h6-ending" alt=""></div>
   <div class="label r">Conclusion</div>
   <h2 class="r end-h">Learn AI by <span class="grad">building.</span></h2>
@@ -968,7 +970,7 @@ const stageK=()=>stage.getBoundingClientRect().width/1920;
 const tfo=el=>{const o=getComputedStyle(el).transformOrigin.split(' ').map(parseFloat);return`${o[0]/el.offsetWidth*100}% ${o[1]/el.offsetHeight*100}%`};
 const tfm=(el,k)=>{const m=getComputedStyle(el).transform;if(!m||m==='none')return'none';const v=m.match(/-?[\d.e]+/g).map(Number);if(v.length!==6)return m;v[4]*=k;v[5]*=k;return`matrix(${v.join(',')})`};
 function playTV(t){
-  const el=pick(slides[i],t.a);if(!el)return false;
+  const el=pick(slides[i],t.a);if(!el)return false;tvBox.style.setProperty('--k',stageK());
   tvOn=t;tvA=el;tvVid.src=t.src;tvVid.currentTime=0;if(window.mqttPublish)mqttPublish();
   if(t.inplace){
     slides[i].classList.add('tv-leaving');tvVid.onended=endTV;
@@ -1010,7 +1012,7 @@ function endTV(){
 // the clip (on its last frame) moves into the overlay box and lands on the next slide's picture:
 // a picture box -> it shrinks into it; a full-slide photo -> it fades into it while the text rises
 function landTV(t){
-  clearTimeout(tvGrow);tvVid.pause();const k=stageK();
+  clearTimeout(tvGrow);tvBox.style.setProperty('--k',stageK());tvVid.pause();const k=stageK();
   if(tvVid.parentNode!==tvBox){
     tvBox.style.transition='none';place(stage.getBoundingClientRect());Object.assign(tvBox.style,{display:'block',opacity:1,borderRadius:'0px'});
     tvBox.appendChild(tvVid);tvVid.classList.remove('alive','on');tvVid.style.transition='none';tvVid.style.transformOrigin=tfo(tvA);tvVid.style.transform=t.drift?'none':tfm(tvA,k);
