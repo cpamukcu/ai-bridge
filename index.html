@@ -813,7 +813,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 8 DATA -->
-<section class="slide" data-scene="data" data-notes="&lt;b&gt;Slide 9 · 65 s · clock 5:50&lt;/b&gt;&lt;br&gt;Does starting with bridge students really work? I couldn&#x27;t find a public network of international students, so I used a real one as a stand-in: about four hundred seventy students at Caltech, in eight houses. &lt;b&gt;[CLICK]&lt;/b&gt; Each colour is one house. Only about half of the friendships go between houses; if students mixed freely, it would be nearly ninety percent. &lt;b&gt;[CLICK]&lt;/b&gt; Then I ran a simulation using AI. A skill starts with five students in one house and spreads through their friends. I ran it three hundred times for every house. Starting with random students, it reaches about four of the other seven houses. Starting with bridge students, it reaches six. Bridge students connect different groups, which in network terms means high betweenness. So we start with them. The spread on screen is an illustration; the bar numbers come from the real runs.">
+<section class="slide" data-scene="data" data-notes="&lt;b&gt;Slide 9 · 65 s · clock 5:50&lt;/b&gt;&lt;br&gt;Does starting with bridge students really work? I couldn&#x27;t find a public network of international students, so I used a real one as a stand-in: about four hundred seventy students at Caltech, in eight houses. &lt;b&gt;[CLICK]&lt;/b&gt; Each colour is one house. Only about half of the friendships go between houses; if students mixed freely, it would be nearly ninety percent. &lt;b&gt;[CLICK]&lt;/b&gt; Then I used AI to run a simulation, and I ran it three hundred times for every house. As a result, if we start with random students, a new skill reaches about four of the other seven houses. If we start with bridge students, it reaches six. So we start with the bridge students.">
   <div class="data">
     <div class="net zoom"><img src="assets/network.svg" alt="Caltech student friendship network" style="width:100%"></div>
     <div>
@@ -865,7 +865,7 @@ img[data-a]:not([src]){visibility:hidden}
 </section>
 
 <!-- 11 TEST -->
-<section class="slide" id="s-test" data-notes="&lt;b&gt;Slide 12 · 30 s · clock 7:30&lt;/b&gt;&lt;br&gt;How would I know it works? I&#x27;d run a pilot with one hundred to two hundred students. I expect three things. Students who connect many groups bring in more sign-ups from other groups. Students with more friends get more of the friends they invite to earn badges. And students who link groups that don&#x27;t know each other earn more Bridge badges and stay active longer. &lt;b&gt;[CLICK · video 10 s]&lt;/b&gt; Now let me wrap up.">
+<section class="slide" id="s-test" data-notes="&lt;b&gt;Slide 12 · 30 s · clock 7:30&lt;/b&gt;&lt;br&gt;How would I know it works? As an international student, I see this around me. The people who spread new things are not always the ones with the most friends. They&#x27;re the ones who know people in different groups. So I&#x27;d test it with a small pilot, one hundred to two hundred students. If I&#x27;m right, the bridge students will bring in more people from other groups, and they&#x27;ll stay active longer. &lt;b&gt;[CLICK · video 10 s]&lt;/b&gt; Now let me wrap up.">
   <div class="photo shade-l tst-photo" id="tstPhoto"><img data-a="s3-chrome" alt=""></div>
   <div class="tst">
     <div class="label r">Evaluation model · pilot of 100–200 students</div>
@@ -972,7 +972,7 @@ const tfo=el=>{const o=getComputedStyle(el).transformOrigin.split(' ').map(parse
 const tfm=(el,k)=>{const m=getComputedStyle(el).transform;if(!m||m==='none')return'none';const v=m.match(/-?[\d.e]+/g).map(Number);if(v.length!==6)return m;v[4]*=k;v[5]*=k;return`matrix(${v.join(',')})`};
 function playTV(t){
   const el=pick(slides[i],t.a);if(!el)return false;tvBox.style.setProperty('--k',stageK());
-  tvOn=t;tvA=el;tvVid.src=t.src;tvVid.currentTime=0;if(window.mqttPublish)mqttPublish();
+  tvOn=t;tvA=el;tvVid.src=t.src;tvVid.currentTime=0;syncState();
   if(t.inplace){
     slides[i].classList.add('tv-leaving');tvVid.onended=endTV;
     const ph=el.closest('.photo');
@@ -1053,7 +1053,11 @@ if(document.readyState==='complete')setTimeout(prefetchTV,300);else addEventList
 function next(){
   if(tvOn)return endTV();
   const t=TV.find(t=>t.from===slides[i].id&&t.src);
-  if(t&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
+  // a hidden window (covered, minimized, other Space) cannot play video: go straight to the slide instead of freezing on the clip
+  if(t&&!document.hidden&&!slides[i].querySelector('.step:not(.on)')&&playTV(t))return;const st=[...slides[i].querySelectorAll('.step:not(.on)')];if(st.length){st[0].classList.add('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i+1)}
+// Next from the phone while a clip plays is ignored, so a second tap cannot cut the clip short
+// (the laptop's keys and click can still skip it; a stuck clip is ended by the safety net above)
+function remoteNext(){if(tvOn)return;next()}
 function prev(){if(tvOn)return abortTV();const on=[...slides[i].querySelectorAll('.step.on')];if(on.length){on.at(-1).classList.remove('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i-1,true)}
 function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src=`assets/new/${name}.${exts[k]}`;
   if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
@@ -1068,7 +1072,7 @@ let LIVE=false; // turns on only when the presenting server (Start Presenting.co
 const slideTitle=sl=>{const h=sl&&sl.querySelector('h1,h2');return h?h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Video'};
 function syncState(){
   if(!LIVE){if(window.mqttPublish)mqttPublish();return}
-  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length,notes:slides[i].dataset.notes||'',
+  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length,tv:!!tvOn,notes:slides[i].dataset.notes||'',
     title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
 }
 if(PREVIEW||!location.protocol.startsWith('http'))document.getElementById('bPhone').style.display='none';
@@ -1078,7 +1082,7 @@ function startLive(){
   (async function poll(){
     try{const r=await (await fetch('/api/cmd?since='+(since??0),{cache:'no-store'})).json();
       if(since===null)since=r.id;else for(const c of r.cmds){since=Math.max(since,c.id);
-        if(c.cmd==='next')next();else if(c.cmd==='prev')prev();else if(c.cmd==='goto')go(c.n)}}catch(e){}
+        if(c.cmd==='next')remoteNext();else if(c.cmd==='prev')prev();else if(c.cmd==='goto')go(c.n)}}catch(e){}
     setTimeout(poll,250);
   })();
 }
@@ -1108,7 +1112,7 @@ function mqttStart(){
     try{const c=mqtt.connect(u,{clientId:'abdeck_'+mqRoom+'_'+Math.random().toString(16).slice(2,8),reconnectPeriod:3000,connectTimeout:8000,keepalive:30});
       c.on('connect',()=>{c.subscribe(BASE+'cmd');mqttPublish()});c.on('error',()=>{});
       c.on('message',(t,p)=>{try{const m=JSON.parse(p.toString());if(!m||!m.id||mqSeen[m.id])return;mqSeen[m.id]=1;
-        if(m.a==='next'){const now=Date.now();if(now-(window.__lastNext||0)<1200)return;window.__lastNext=now;next()}else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
+        if(m.a==='next'){const now=Date.now();if(now-(window.__lastNext||0)<1200)return;window.__lastNext=now;remoteNext()}else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
       mq.push(c)}catch(e){}});
   window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now(),tv:!!tvOn});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
   setInterval(()=>window.mqttPublish(),10000);

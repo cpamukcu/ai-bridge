@@ -121,7 +121,7 @@ footer button:active{transform:scale(.97);opacity:.85}
     if(key!==lastKey){lastKey=key;renderNotes(notes)}}
 
   function loadDeck(){
-    fetch('index.html').then(function(r){return r.text()}).then(function(t){
+    fetch('./').then(function(r){return r.text()}).then(function(t){
       var d=new DOMParser().parseFromString(t,'text/html');
       DECKS=[].slice.call(d.querySelectorAll('.slide')).map(function(x,i){var h=x.querySelector('h1,h2');return{notes:x.dataset.notes||'',title:h?clean(h.innerHTML):'Slide '+(i+1)}});
       if(!total)total=DECKS.length;buildList();if(lastState)show(lastState,true)}).catch(function(){})}
