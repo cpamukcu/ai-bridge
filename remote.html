@@ -72,12 +72,11 @@ footer button:active{transform:scale(.97);opacity:.85}
     try{navigator.vibrate&&navigator.vibrate(14)}catch(e){}
   }
   var lastTap=0;$('nextBtn').onclick=function(){var n=Date.now();if(n-lastTap<900)return;lastTap=n;send('next')};
-  $('prevBtn').onclick=function(){send('prev')};
+  var lastBack=0;$('prevBtn').onclick=function(){var n=Date.now();if(n-lastBack<900)return;lastBack=n;send('prev')};
   $('aplus').onclick=function(){setNf(nf+2)};$('aminus').onclick=function(){setNf(nf-2)};
   $('listBtn').onclick=function(){$('list').hidden=false;var c=$('ol').querySelector('.cur');if(c)c.scrollIntoView({block:'center'})};
   $('closeList').onclick=function(){$('list').hidden=true};
-  var sx=null;document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX},{passive:true});
-  document.addEventListener('touchend',function(e){if(sx===null)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>90)send(dx<0?'next':'prev');sx=null});
+  // no swipe to change slides: scrolling the notes moved slides by mistake. Only the Next and Back buttons change slides.
 
   // timer: tap the time to start it; tap again while it runs to reset to 00:00; amber at 9:00, red after 10:00
   var t0=0,acc=0,running=false;
