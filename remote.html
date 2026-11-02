@@ -13,13 +13,13 @@
 html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:var(--font)}
 body{display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 16px 0;overscroll-behavior:none}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
-header{display:flex;align-items:center;gap:10px;padding:12px 0 10px;font-size:14px;color:var(--muted)}
+header{display:flex;align-items:center;gap:8px;padding:10px 0 8px;font-size:14px;color:var(--muted)}
 #dot{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
 #dot.ok{background:var(--green)}#dot.wait{background:var(--amber)}#dot.off{background:var(--red)}
 #stat{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #timer{font-variant-numeric:tabular-nums;font-size:17px;font-weight:600;color:var(--white);padding:6px 12px;border-radius:999px;background:var(--card)}
 #timer.run{color:var(--green)}#timer.warn{color:var(--amber)}#timer.over{color:var(--red)}
-#now{padding:6px 0 12px;border-bottom:1px solid var(--line)}
+#now{padding:2px 0 10px;border-bottom:1px solid var(--line)}
 .kick{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue)}
 h1{margin:6px 0 4px;font-size:26px;line-height:1.15;font-weight:700;color:var(--white);text-wrap:balance}
 #nxt{margin:0;font-size:15px;color:var(--muted)}
@@ -30,10 +30,10 @@ h1{margin:6px 0 4px;font-size:26px;line-height:1.15;font-weight:700;color:var(--
 #notes .nb li::marker{color:var(--cyan)}
 #notes .nb li.nclick{list-style:none;margin:.7em 0 .8em -1.15em;padding:0}
 #notes .nb li.nclick::before{content:"CLICK";display:inline-block;padding:.15em .8em;border-radius:999px;background:var(--amber);color:#000;font-size:.62em;font-weight:800;letter-spacing:.05em}
-#tools{display:flex;gap:8px;padding:8px 0}
-#tools button{flex:1;padding:10px 0;border-radius:12px;background:var(--card);font-size:15px;font-weight:600}
+#tools{display:flex;gap:6px;flex:none}
+#tools button{min-width:40px;height:34px;padding:0 10px;border-radius:999px;background:var(--card);font-size:15px;font-weight:600;color:var(--white)}
 footer{display:grid;grid-template-columns:1fr 2fr;gap:10px;padding:6px 0 calc(12px + env(safe-area-inset-bottom,0px))}
-footer button{height:96px;border-radius:22px;font-size:22px;font-weight:700;background:var(--card);color:var(--white);touch-action:manipulation}
+footer button{height:80px;border-radius:22px;font-size:22px;font-weight:700;background:var(--card);color:var(--white);touch-action:manipulation}
 footer #nextBtn{background:var(--blue)}
 footer button:active{transform:scale(.97);opacity:.85}
 #list{position:fixed;inset:0;z-index:5;background:var(--bg);padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));overflow-y:auto}
@@ -47,11 +47,10 @@ footer button:active{transform:scale(.97);opacity:.85}
 </style>
 </head>
 <body>
-<header><i id="dot"></i><span id="stat">Connecting&#8230;</span><button id="timer" aria-label="Start or pause the timer">00:00</button></header>
+<header><i id="dot"></i><span id="stat">Connecting&#8230;</span><span id="tools"><button id="aminus" aria-label="Smaller text">A&#8722;</button><button id="aplus" aria-label="Bigger text">A+</button><button id="listBtn" aria-label="All slides">&#9776;</button></span><button id="timer" aria-label="Start or pause the timer">00:00</button></header>
 <section id="now"><p class="kick">Slide <span id="num">&ndash;</span> / <span id="tot">&ndash;</span></p><h1 id="title">Waiting for the deck</h1><p id="nxt"></p></section>
 <div id="meta"></div>
 <article id="notes" aria-live="polite">Open the deck on the laptop first, then scan the QR code from the Phone button.</article>
-<div id="ver" style="text-align:center;font-size:11px;color:#86868B;padding:2px 0">Build 26 Oct 19:01</div><div id="tools"><button id="aminus" aria-label="Smaller text">A&#8722;</button><button id="aplus" aria-label="Bigger text">A+</button><button id="listBtn">All slides</button></div>
 <footer><button id="prevBtn">&#8249; Back</button><button id="nextBtn">Next &#8250;</button></footer>
 <div id="list" hidden><button id="closeList">Close</button><h2>Slides</h2><ol id="ol"></ol></div>
 <script>window.onerror=function(m){var s=document.getElementById("stat");if(s)s.textContent="Error: "+m;return false}</script>
