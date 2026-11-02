@@ -990,7 +990,7 @@ function playTV(t){
       tvVid.addEventListener('playing',()=>{if(tvOn!==t)return;tvBox.style.opacity=1;
         tvGrow=setTimeout(()=>{place(stage.getBoundingClientRect());tvBox.style.borderRadius='0px'},700)},{once:true});
     }
-    tvVid.play().catch(()=>setTimeout(()=>{if(tvOn===t)endTV()},300));tvWatch();return true;
+    tvVid.play().catch(()=>{vidBlocked=true;syncState();setTimeout(()=>{if(tvOn===t)endTV()},300)});tvWatch();return true;
   }
   tvBox.style.transition='none';place(el.getBoundingClientRect());Object.assign(tvBox.style,{display:'block',opacity:1,borderRadius:'40px'});
   tvBox.offsetWidth;tvBox.style.transition='';
@@ -1058,6 +1058,14 @@ function next(){
 // Next from the phone while a clip plays is ignored, so a second tap cannot cut the clip short
 // (the laptop's keys and click can still skip it; a stuck clip is ended by the safety net above)
 function remoteNext(){if(tvOn)return;next()}
+// Safari starts a clip on its own (a Next from the phone) only after one click or key press on the laptop page:
+// the first one unlocks the clip player. If a clip is still blocked, the phone shows "Click the laptop once".
+let vidOK=false,vidBlocked=false;
+function unlockVid(){if(vidOK)return;vidOK=true;if(tvOn)return;
+  if(!tvVid.getAttribute('src')&&TV[0])tvVid.src=TV[0].src;
+  const p=tvVid.play();if(p)p.then(()=>{if(vidBlocked){vidBlocked=false;syncState()}if(!tvOn){tvVid.pause();tvVid.currentTime=0}},()=>{vidOK=false})}
+['pointerdown','keydown','touchend'].forEach(e=>addEventListener(e,unlockVid,{capture:true,passive:true}));
+tvVid.addEventListener('ended',()=>{if(vidBlocked){vidBlocked=false;syncState()}});
 function prev(){if(tvOn)return abortTV();const on=[...slides[i].querySelectorAll('.step.on')];if(on.length){on.at(-1).classList.remove('on');if(window.FX)FX.step(slides[i],slides[i].querySelectorAll('.step.on').length)}else go(i-1,true)}
 function tryAsset(name,exts,ok){const go1=k=>{if(k>=exts.length)return;const src=`assets/new/${name}.${exts[k]}`;
   if(exts[k]==='mp4'){const v=document.createElement('video');v.onloadedmetadata=()=>ok(src);v.onerror=()=>go1(k+1);v.src=src}
@@ -1072,7 +1080,7 @@ let LIVE=false; // turns on only when the presenting server (Start Presenting.co
 const slideTitle=sl=>{const h=sl&&sl.querySelector('h1,h2');return h?h.innerHTML.replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim():'Video'};
 function syncState(){
   if(!LIVE){if(window.mqttPublish)mqttPublish();return}
-  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length,tv:!!tvOn,notes:slides[i].dataset.notes||'',
+  fetch('/api/state',{method:'POST',body:JSON.stringify({slide:i,total:slides.length,tv:!!tvOn,vb:vidBlocked,notes:slides[i].dataset.notes||'',
     title:slideTitle(slides[i]),next:slideTitle(slides[i+1]),t:Date.now()})}).catch(()=>{});
 }
 if(PREVIEW||!location.protocol.startsWith('http'))document.getElementById('bPhone').style.display='none';
@@ -1114,7 +1122,7 @@ function mqttStart(){
       c.on('message',(t,p)=>{try{const m=JSON.parse(p.toString());if(!m||!m.id||mqSeen[m.id])return;mqSeen[m.id]=1;
         if(m.a==='next'){const now=Date.now();if(now-(window.__lastNext||0)<1200)return;window.__lastNext=now;remoteNext()}else if(m.a==='prev')prev();else if(m.a==='go'&&typeof m.n==='number')go(m.n);else mqttPublish()}catch(e){}});
       mq.push(c)}catch(e){}});
-  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now(),tv:!!tvOn});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
+  window.mqttPublish=()=>{const msg=JSON.stringify({slide:i,total:slides.length,t:Date.now(),tv:!!tvOn,vb:vidBlocked});mq.forEach(c=>{if(c.connected)c.publish(BASE+'state',msg,{qos:0,retain:true})})};
   setInterval(()=>window.mqttPublish(),10000);
 }
 addEventListener('load',()=>setTimeout(()=>{if(!LIVE&&!PREVIEW)mqttStart()},1500));
